@@ -11,7 +11,7 @@ const Item = ({title, isActive, setSelectedGender}: Item) => (
   <TouchableOpacity
     style={[styles.items, isActive && styles.active]}
     onPress={setSelectedGender}>
-    <Text>{title}</Text>
+    <Text style={styles.text}>{title}</Text>
   </TouchableOpacity>
 );
 
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width / 4,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 40,
+    height: 50,
     backgroundColor: 'white',
     borderBottomColor: 'rgba(150, 150, 150, 0.500)',
     borderBottomWidth: 1,
@@ -30,5 +30,8 @@ const styles = StyleSheet.create({
   active: {
     borderBottomColor: 'black',
     borderBottomWidth: 1.5,
+  },
+  text: {
+    fontSize: 16,
   },
 });

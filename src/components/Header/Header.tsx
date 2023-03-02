@@ -13,7 +13,7 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   header: {
-    height: 40,
+    height: 50,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
