@@ -1,11 +1,10 @@
 import React from 'react';
 import {FlatList, StyleSheet} from 'react-native';
 import Item from './components/Item';
-import {data} from '../../../temporary-data';
+import {data} from '../../../../temporary-data';
 
 const NavPanel = () => {
   const [selectedGender, setSelectedGender] = React.useState<number | null>(0);
-  console.log(selectedGender);
   return (
     <FlatList
       data={data}
