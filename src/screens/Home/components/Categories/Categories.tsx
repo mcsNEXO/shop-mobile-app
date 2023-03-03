@@ -1,14 +1,19 @@
 import {categoriesData} from './categoriesData';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import useCategory from '../../../../hooks/useCategory';
+import {useNavigation} from '@react-navigation/native';
 
 const Categories = () => {
+  const {category} = useCategory();
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       {categoriesData.map(
         (el: {label: string; value: string}, index: number) => {
           return (
             <TouchableOpacity style={styles.category} key={index}>
-              <Text>{el.label}</Text>
+              <Text style={styles.label}>{el.label}</Text>
             </TouchableOpacity>
           );
         },
@@ -29,10 +34,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     shadowColor: 'black',
     borderWidth: 1,
-    shadowOffset: {width: 5, height: 5},
-    shadowOpacity: 5,
     borderRadius: 5,
     padding: 10,
+    backgroundColor: 'white',
+  },
+  label: {
+    fontSize: 14.5,
+    color: 'black',
   },
 });
 

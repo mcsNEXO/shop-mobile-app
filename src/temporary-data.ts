@@ -1,18 +1,40 @@
 export const data = [
   {
-    value: 'man',
-    label: 'Man',
+    value: 'Man',
+    submenu: [
+      {
+        value: 'Lifestyle',
+      },
+      {
+        value: 'Sport',
+      },
+    ],
   },
   {
-    value: 'woman',
-    label: 'Woman',
+    value: 'Woman',
+    subMenu: [
+      {
+        value: 'Lifestyle',
+      },
+      {
+        value: 'Running',
+      },
+    ],
   },
   {
-    value: 'kids',
-    label: 'Kids',
+    value: 'Kids',
+    subMenu: [
+      {
+        value: 'Lifestyle',
+      },
+    ],
   },
   {
-    value: 'promotion',
-    label: 'Promotions',
+    value: 'Promotion',
+    subMenu: [
+      {
+        value: 'Newest',
+      },
+    ],
   },
 ];

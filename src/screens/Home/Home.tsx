@@ -1,15 +1,8 @@
-import {Text, View} from 'react-native';
-import NavPanel from './components/NavPanel/NavPanel';
-import {categoriesData} from './components/Categories/categoriesData';
 import Categories from './components/Categories/Categories';
+import React from 'react';
 
 const Home = () => {
-  return (
-    <View>
-      <NavPanel />
-      <Categories />
-    </View>
-  );
+  return <Categories />;
 };
 
 export default Home;
