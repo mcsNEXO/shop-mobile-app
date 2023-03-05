@@ -12,8 +12,17 @@ const Categories = () => {
       {categoriesData.map(
         (el: {label: string; value: string}, index: number) => {
           return (
-            <TouchableOpacity style={styles.category} key={index}>
-              <Text style={styles.label}>{el.label}</Text>
+            <TouchableOpacity
+              style={styles.category}
+              key={index}
+              onPress={() => {
+                navigation.getParent()?.setOptions({headerShown: false});
+                navigation.navigate(
+                  `${category}List` as never,
+                  {name: el.label} as never,
+                );
+              }}>
+              <Text>{el.label}</Text>
             </TouchableOpacity>
           );
         },

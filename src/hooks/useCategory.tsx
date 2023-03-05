@@ -6,7 +6,7 @@ const useCategory = () => {
 
   const setCategory = async (value: string) => {
     setStateCategory(value);
-    await setAsyncStorage('category', value);
+    // await setAsyncStorage('category', value);
   };
 
   return {setCategory, category};

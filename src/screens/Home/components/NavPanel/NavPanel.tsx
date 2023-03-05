@@ -4,7 +4,7 @@ import Item from './components/Item';
 import {data} from '../../../../temporary-data';
 import useCategory from '../../../../hooks/useCategory';
 
-const NavPanel = ({navigation}: any) => {
+const NavPanel = () => {
   const {category, setCategory} = useCategory();
 
   return (

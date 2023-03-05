@@ -10,17 +10,16 @@ export const CategoryContext = React.createContext<IContext>(null as any);
 export const CategoryProvider: React.FC<{children: React.ReactNode}> = ({
   children,
 }) => {
-  const [category, setStateCategory] = React.useState<string>('');
+  const [category, setStateCategory] = React.useState<string>('Man');
 
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const data = await getAsyncStorage('category');
-        if (!data) return;
-        setStateCategory(data);
-      } catch (err) {}
-    })();
-  }, []);
+  // React.useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const data = await getAsyncStorage('category');
+  //       setStateCategory(data ? data : 'Man');
+  //     } catch (err) {}
+  //   })();
+  // }, []);
 
   const value = {
     category,

@@ -12,13 +12,15 @@ const Navigator = () => {
     <>
       <NavigationContainer>
         <Stack.Navigator
+          id="Headers"
           screenOptions={{
-            header: props => (
+            header: () => (
               <>
                 <Header />
-                <NavPanel navigation={props.navigation} />
+                <NavPanel />
               </>
             ),
+            headerShown: true,
           }}>
           <Stack.Screen name="Home" component={Home} />
         </Stack.Navigator>
