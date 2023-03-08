@@ -9,7 +9,7 @@ const PrevButton = () => {
     <TouchableOpacity
       onPress={() => {
         navigation.goBack();
-        navigation.getParent('Headers' as any)?.setOptions({headerShown: true});
+        navigation.getParent('header' as any)?.setOptions({headerShown: true});
       }}>
       <Icon name="arrow-left" size={30} color="black" />
     </TouchableOpacity>

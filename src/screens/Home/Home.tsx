@@ -1,25 +1,28 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ManList from './components/ManList/ManList';
 import Categories from './components/Categories/Categories';
+import TypeCategories from '../../screens/Home/components/Categories/TypeCategories/TypeCategories';
 import PrevButton from '../../components/Buttons/PrevButton';
 
 const Stack = createNativeStackNavigator();
 
 const Home = () => {
   return (
-    <Stack.Navigator id="Home">
+    <Stack.Navigator
+      initialRouteName="Categories"
+      screenOptions={{
+        headerLeft: () => <PrevButton />,
+      }}>
       <Stack.Screen
         name="Categories"
         component={Categories}
         options={{headerShown: false}}></Stack.Screen>
       <Stack.Screen
-        name="ManList"
-        component={ManList}
-        options={({route}) => ({
-          title: route?.params?.name,
-          headerShown: true,
-          headerLeft: () => <PrevButton />,
-        })}></Stack.Screen>
+        name="TypeCategories"
+        component={TypeCategories}
+        options={({route}: any) => ({
+          title: route.params?.type,
+        })}
+      />
     </Stack.Navigator>
   );
 };

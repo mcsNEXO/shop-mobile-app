@@ -1,15 +1,13 @@
 import {useCategoryContext} from '../context/CategoryContext';
-import {setAsyncStorage} from '../helpers/asyncStorage';
 
 const useCategory = () => {
-  const {category, setStateCategory} = useCategoryContext();
+  const {category, setStateCategory, type, setType} = useCategoryContext();
 
   const setCategory = async (value: string) => {
     setStateCategory(value);
-    // await setAsyncStorage('category', value);
   };
 
-  return {setCategory, category};
+  return {setCategory, category, type, setType};
 };
 
 export default useCategory;

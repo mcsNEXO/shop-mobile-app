@@ -9,23 +9,21 @@ const Stack = createNativeStackNavigator();
 
 const Navigator = () => {
   return (
-    <>
-      <NavigationContainer>
-        <Stack.Navigator
-          id="Headers"
-          screenOptions={{
-            header: () => (
-              <>
-                <Header />
-                <NavPanel />
-              </>
-            ),
-            headerShown: true,
-          }}>
-          <Stack.Screen name="Home" component={Home} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </>
+    <NavigationContainer>
+      <Stack.Navigator
+        id="header"
+        screenOptions={{
+          header: () => (
+            <>
+              <Header />
+              <NavPanel />
+            </>
+          ),
+          headerShown: true,
+        }}>
+        <Stack.Screen name={'Home'} component={Home} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

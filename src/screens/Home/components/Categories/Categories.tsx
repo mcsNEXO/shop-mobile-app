@@ -1,33 +1,31 @@
-import {categoriesData} from './categoriesData';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import useCategory from '../../../../hooks/useCategory';
 import {useNavigation} from '@react-navigation/native';
+import {categoryData} from '../../../../data';
 
 const Categories = () => {
   const {category} = useCategory();
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
+  const type = categoryData?.categoryList?.find(
+    e => e?.name === category,
+  )?.children;
 
   return (
-    <View style={styles.container}>
-      {categoriesData.map(
-        (el: {label: string; value: string}, index: number) => {
-          return (
-            <TouchableOpacity
-              style={styles.category}
-              key={index}
-              onPress={() => {
-                navigation.getParent()?.setOptions({headerShown: false});
-                navigation.navigate(
-                  `${category}List` as never,
-                  {name: el.label} as never,
-                );
-              }}>
-              <Text>{el.label}</Text>
-            </TouchableOpacity>
-          );
-        },
+    <FlatList
+      data={type}
+      renderItem={({item, index}) => (
+        <View style={styles.container} key={index}>
+          <TouchableOpacity
+            style={styles.category}
+            onPress={() => {
+              navigation.getParent('header').setOptions({headerShown: false}),
+                navigation.navigate('TypeCategories', {type: item.name});
+            }}>
+            <Text>{item?.name}</Text>
+          </TouchableOpacity>
+        </View>
       )}
-    </View>
+    />
   );
 };
 

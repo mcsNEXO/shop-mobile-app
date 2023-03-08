@@ -1,24 +1,24 @@
 import React from 'react';
 import {FlatList, StyleSheet} from 'react-native';
 import Item from './components/Item';
-import {data} from '../../../../temporary-data';
 import useCategory from '../../../../hooks/useCategory';
+import {categoryData} from '../../../../data';
 
 const NavPanel = () => {
   const {category, setCategory} = useCategory();
 
   return (
     <FlatList
-      data={data}
+      data={categoryData.categoryList}
       horizontal
       contentContainerStyle={styles.flatList}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({item, index}) => (
         <Item
-          title={item.value}
-          isActive={item.value === category}
+          title={item.name}
+          isActive={item.name === category}
           onPress={() => {
-            setCategory(item.value);
+            setCategory(item.name);
           }}
         />
       )}
