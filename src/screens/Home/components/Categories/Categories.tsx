@@ -1,19 +1,31 @@
-import {categoriesData} from './categoriesData';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import useCategory from '../../../../hooks/useCategory';
+import {useNavigation} from '@react-navigation/native';
+import {categoryData} from '../../../../data';
 
 const Categories = () => {
+  const {category} = useCategory();
+  const navigation: any = useNavigation();
+  const type = categoryData?.categoryList?.find(
+    e => e?.name === category,
+  )?.children;
+
   return (
-    <View style={styles.container}>
-      {categoriesData.map(
-        (el: {label: string; value: string}, index: number) => {
-          return (
-            <TouchableOpacity style={styles.category} key={index}>
-              <Text>{el.label}</Text>
-            </TouchableOpacity>
-          );
-        },
+    <FlatList
+      data={type}
+      renderItem={({item, index}) => (
+        <View style={styles.container} key={index}>
+          <TouchableOpacity
+            style={styles.category}
+            onPress={() => {
+              navigation.getParent('header').setOptions({headerShown: false}),
+                navigation.navigate('TypeCategories', {type: item.name});
+            }}>
+            <Text>{item?.name}</Text>
+          </TouchableOpacity>
+        </View>
       )}
-    </View>
+    />
   );
 };
 
@@ -29,10 +41,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     shadowColor: 'black',
     borderWidth: 1,
-    shadowOffset: {width: 5, height: 5},
-    shadowOpacity: 5,
     borderRadius: 5,
     padding: 10,
+    backgroundColor: 'white',
+  },
+  label: {
+    fontSize: 14.5,
+    color: 'black',
   },
 });
 
