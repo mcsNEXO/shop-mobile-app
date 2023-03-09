@@ -1,12 +1,13 @@
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import useCategory from '../../../../../hooks/useCategory';
-import {useRoute} from '@react-navigation/native';
-import {categoryData} from '../../../../../data';
+import useCategory from '../../../../../../hooks/useCategory';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {categoryData} from '../../../../../../data';
 
 const TypeCategories = (props: any) => {
   //hooks
   const {category} = useCategory();
   const route: any = useRoute();
+  const {navigate}: any = useNavigation();
 
   //variables
   const type = route.params?.type;
@@ -21,7 +22,15 @@ const TypeCategories = (props: any) => {
         data={data}
         renderItem={({item}) => (
           <View style={styles.container}>
-            <TouchableOpacity style={styles.category}>
+            <TouchableOpacity
+              style={styles.category}
+              onPress={() =>
+                navigate('Products', {
+                  gender: category,
+                  type: type,
+                  category: item.name,
+                })
+              }>
               <Text>{item.name}</Text>
             </TouchableOpacity>
           </View>
