@@ -2,6 +2,7 @@ import {FlatList, View, Text, StyleSheet, Image} from 'react-native';
 import {Dimensions} from 'react-native';
 import axios from '../../../../../../axios';
 import React from 'react';
+import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
 import {useRoute} from '@react-navigation/native';
 
 const Products = () => {
@@ -26,15 +27,23 @@ const Products = () => {
     getData();
   }, []);
   return (
-    <View style={styles.cos}>
+    <View style={styles.container}>
       <FlatList
-        // style={styles.container}
         numColumns={2}
         data={products}
         renderItem={({item}: any) => {
           return (
             <View style={styles.box}>
-              <Text style={{color: 'white'}}>{item.name}</Text>
+              <Image source={IMAGENAME.airforce.white} style={styles.image} />
+              {/* <Text style={{color: 'white'}}>{item.name}</Text> */}
+              <View style={styles.desc}>
+                <Text style={styles.text}>{item.name}</Text>
+                <Text
+                  style={
+                    styles.textGender
+                  }>{`${item.gender}'s ${item.type}`}</Text>
+                <Text style={styles.textPrice}>{item.price}$</Text>
+              </View>
             </View>
           );
         }}
@@ -47,23 +56,45 @@ export default Products;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    width: Dimensions.get('window').width,
     flexDirection: 'row',
-    backgroundColor: 'yellow',
     height: '100%',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
   },
   box: {
-    width: Dimensions.get('window').width / 2,
+    width: Dimensions.get('window').width / 2 - 10,
     borderColor: 'white',
     borderWidth: 1,
-    height: 100,
     marginTop: 10,
-    backgroundColor: 'black',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
+    flexDirection: 'column',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
-  cos: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  text: {
+    color: 'black',
+    fontSize: 16,
+    textTransform: 'capitalize',
+  },
+  image: {
+    height: 200,
+    backgroundColor: 'transparent',
+    width: Dimensions.get('screen').width / 2 - 10,
+    justifyContent: 'center',
+  },
+  textGender: {
+    color: 'gray',
+    textTransform: 'capitalize',
+  },
+  textPrice: {
+    color: 'black',
+    fontSize: 16,
+    marginTop: 10,
+  },
+  desc: {
+    marginTop: 4,
+    paddingLeft: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
 });
