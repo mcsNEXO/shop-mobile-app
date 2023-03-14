@@ -1,7 +1,7 @@
 import React from 'react';
+import useCategory from '../../../../hooks/useCategory';
 import {FlatList, StyleSheet} from 'react-native';
 import Item from './components/Item';
-import useCategory from '../../../../hooks/useCategory';
 import {categoryData} from '../../../../data';
 
 const NavPanel = () => {
@@ -13,11 +13,11 @@ const NavPanel = () => {
       horizontal
       contentContainerStyle={styles.flatList}
       keyExtractor={(_, index) => index.toString()}
-      renderItem={({item, index}) => (
+      renderItem={({item}) => (
         <Item
           title={item.name}
           isActive={item.name === category}
-          onPress={() => {
+          setCategory={() => {
             setCategory(item.name);
           }}
         />

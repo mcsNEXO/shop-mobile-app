@@ -15,7 +15,7 @@ const PrevButton = () => {
             .getParent('header' as any)
             ?.setOptions({headerShown: true});
       }}>
-      <Icon name="arrow-left" size={30} color="black" />
+      <Icon name="arrow-back" size={25} style={{width: 40}} color="black" />
     </TouchableOpacity>
   );
 };

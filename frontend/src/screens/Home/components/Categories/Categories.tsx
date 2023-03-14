@@ -45,10 +45,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
   },
-  label: {
-    fontSize: 14.5,
-    color: 'black',
-  },
 });
 
 export default Categories;

@@ -16,7 +16,9 @@ const Home = () => {
       <Stack.Screen
         name="Categories"
         component={Categories}
-        options={{headerShown: false}}></Stack.Screen>
+        options={{
+          headerShown: false,
+        }}></Stack.Screen>
       <Stack.Screen
         name="TypeCategories"
         component={TypeCategories}

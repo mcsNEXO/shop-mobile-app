@@ -1,6 +1,4 @@
 import React from 'react';
-import {categoryData} from '../data';
-
 interface IContext {
   category: string;
   setStateCategory: React.Dispatch<React.SetStateAction<string>>;

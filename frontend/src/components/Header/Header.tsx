@@ -14,10 +14,9 @@ const Header = () => {
 const styles = StyleSheet.create({
   header: {
     height: 50,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: 18,

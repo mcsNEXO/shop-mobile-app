@@ -1,14 +1,29 @@
-import {FlatList, View, Text, StyleSheet, Image} from 'react-native';
-import {Dimensions} from 'react-native';
-import axios from '../../../../../../axios';
 import React from 'react';
-import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
+import {
+  FlatList,
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import axios from '../../../../../../axios';
 import {useRoute} from '@react-navigation/native';
+import {Dimensions} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
+import FilterModal from '../../../../../../components/Modals/FilterModal/FilterModal';
 
 const Products = () => {
   const route: any = useRoute();
 
-  const [products, setProducts] = React.useState();
+  const [products, setProducts] = React.useState<any[]>();
+  const [openedFilterModal, setOpendFilterModal] =
+    React.useState<boolean>(false);
+
+  const handleOpenedFilterModal = (value: boolean) => {
+    return setOpendFilterModal(value);
+  };
 
   const getData = async () => {
     try {
@@ -18,24 +33,40 @@ const Products = () => {
         gender: route?.params.gender.toLowerCase(),
       };
       const res = await axios.post('get-searched-products', data);
-      setProducts(res.data.products);
+      return setProducts(res.data.products);
     } catch (err) {
       console.log(err);
     }
   };
+
   React.useEffect(() => {
     getData();
   }, []);
+
+  const getStyles = (index: number, productsLength: number | undefined) => {
+    if (productsLength === undefined) return;
+    if (productsLength === 1) {
+      return styles.lastChild;
+    } else if (productsLength - 1 === index) {
+      if (index % 2 == 0) {
+        if (index > 0) {
+          return styles.lastChild;
+        }
+      }
+    }
+    return styles.box;
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         numColumns={2}
         data={products}
-        renderItem={({item}: any) => {
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({item, index}: {item: any; index: number}) => {
           return (
-            <View style={styles.box}>
+            <View style={getStyles(index, products?.length)}>
               <Image source={IMAGENAME.airforce.white} style={styles.image} />
-              {/* <Text style={{color: 'white'}}>{item.name}</Text> */}
               <View style={styles.desc}>
                 <Text style={styles.text}>{item.name}</Text>
                 <Text
@@ -48,6 +79,14 @@ const Products = () => {
           );
         }}
       />
+      {openedFilterModal && (
+        <FilterModal closeModal={() => handleOpenedFilterModal(false)} />
+      )}
+      <View style={styles.iconBox}>
+        <TouchableOpacity onPress={() => handleOpenedFilterModal(true)}>
+          <Icon size={40} name="filter-alt" color={'black'} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -57,29 +96,46 @@ export default Products;
 const styles = StyleSheet.create({
   container: {
     width: Dimensions.get('window').width,
-    flexDirection: 'row',
     height: '100%',
-    justifyContent: 'space-between',
     backgroundColor: 'white',
   },
   box: {
     width: Dimensions.get('window').width / 2 - 10,
-    borderColor: 'white',
-    borderWidth: 1,
-    marginTop: 10,
     flexDirection: 'column',
+    marginTop: 10,
     marginLeft: 'auto',
     marginRight: 'auto',
+    borderWidth: 1,
+    borderColor: 'white',
+  },
+  iconBox: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: 20,
+    bottom: 10,
+    borderColor: 'black',
+    borderRadius: 50,
+    elevation: 8,
+    backgroundColor: 'whitesmoke',
+  },
+  lastChild: {
+    width: Dimensions.get('window').width / 2 - 10,
+    flexDirection: 'column',
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'white',
   },
   text: {
-    color: 'black',
     fontSize: 16,
+    color: 'black',
     textTransform: 'capitalize',
   },
   image: {
-    height: 200,
-    backgroundColor: 'transparent',
     width: Dimensions.get('screen').width / 2 - 10,
+    height: 200,
     justifyContent: 'center',
   },
   textGender: {
@@ -87,9 +143,9 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   textPrice: {
-    color: 'black',
-    fontSize: 16,
     marginTop: 10,
+    fontSize: 16,
+    color: 'black',
   },
   desc: {
     marginTop: 4,

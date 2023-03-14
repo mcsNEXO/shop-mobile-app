@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const shoesSchema = new Schema({
@@ -6,7 +6,7 @@ const shoesSchema = new Schema({
     type: String,
     required: true,
     unique: false,
-    minlength: [3, 'Min 3 characters!'],
+    minlength: [3, "Min 3 characters!"],
     lowercase: true,
     trim: true,
   },
@@ -17,16 +17,17 @@ const shoesSchema = new Schema({
   },
   category: {
     type: String,
+    trim: true,
     required: true,
     lowercase: true,
   },
   colors: {
     type: Array,
-    required: [true, 'Select min 1 color!'],
+    required: [true, "Select min 1 color!"],
   },
   size: {
     type: Array,
-    required: [true, 'Select min 1 size!'],
+    required: [true, "Select min 1 size!"],
   },
   image: [
     {
@@ -37,11 +38,11 @@ const shoesSchema = new Schema({
   ],
   price: {
     type: Number,
-    required: [true, 'Write price!'],
+    required: [true, "Write price!"],
   },
   gender: {
     type: String,
-    required: [true, 'Select gender!'],
+    required: [true, "Select gender!"],
     lowercase: true,
   },
   index: {
@@ -50,6 +51,6 @@ const shoesSchema = new Schema({
   },
 });
 
-const Shoes = mongoose.model('Shoes', shoesSchema);
+const Shoes = mongoose.model("Shoes", shoesSchema);
 
 module.exports = Shoes;

@@ -4,13 +4,13 @@ import {Dimensions} from 'react-native';
 interface Item {
   title: string;
   isActive: boolean;
-  onPress: () => void;
+  setCategory: () => void;
 }
 
-const Item = ({title, isActive, onPress}: Item) => (
+const Item = ({title, isActive, setCategory}: Item) => (
   <TouchableOpacity
     style={[styles.items, isActive && styles.active]}
-    onPress={onPress}>
+    onPress={setCategory}>
     <Text style={styles.text}>{title}</Text>
   </TouchableOpacity>
 );

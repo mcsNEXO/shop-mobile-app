@@ -17,11 +17,10 @@ export default ListHeader;
 
 const styles = StyleSheet.create({
   header: {
-    height: 50,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
   },
   title: {
     fontSize: 18,
