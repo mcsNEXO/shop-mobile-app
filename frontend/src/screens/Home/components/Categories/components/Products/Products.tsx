@@ -82,11 +82,13 @@ const Products = () => {
       {openedFilterModal && (
         <FilterModal closeModal={() => handleOpenedFilterModal(false)} />
       )}
-      <View style={styles.iconBox}>
-        <TouchableOpacity onPress={() => handleOpenedFilterModal(true)}>
-          <Icon size={40} name="filter-alt" color={'black'} />
-        </TouchableOpacity>
-      </View>
+      {!openedFilterModal && (
+        <View style={styles.iconBox}>
+          <TouchableOpacity onPress={() => handleOpenedFilterModal(true)}>
+            <Icon size={40} name="filter-alt" color={'black'} />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
