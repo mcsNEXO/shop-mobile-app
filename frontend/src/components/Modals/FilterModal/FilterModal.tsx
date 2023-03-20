@@ -4,18 +4,27 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  TextInput,
+  ScrollView,
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {RadioButton} from 'react-native-radio-buttons-group';
 import Checkbox from '../../Checkbox/Checkbox';
+import {colorsData} from '../../../data';
 interface IFilterModal {
   closeModal: () => void;
 }
 
 const FilterModal = ({closeModal}: IFilterModal) => {
   const [sortedBy, setSortedBy] = React.useState<string>('1');
-  const [isChecked, setIsChecked] = React.useState({
+  const [price, setPrice] = React.useState<string>('');
+  const [toPrice, setToPrice] = React.useState<string>('');
+  const [isChecked, setIsChecked] = React.useState<{
+    man: boolean;
+    woman: boolean;
+    kids: boolean;
+  }>({
     man: false,
     woman: false,
     kids: false,
@@ -47,17 +56,30 @@ const FilterModal = ({closeModal}: IFilterModal) => {
       selected: false,
     },
   ];
+  const ALLOW_NUMBERS = '0123456789';
+
+  const priceHandler = (text: string, type: string) => {
+    let newPrice = '';
+    for (var i = 0; i < text.length; i++) {
+      if (ALLOW_NUMBERS.indexOf(text[i]) > -1) {
+        newPrice = newPrice + text[i];
+      } else {
+        return;
+      }
+    }
+    type === 'toPrice' ? setToPrice(newPrice) : setPrice(newPrice);
+  };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Sort and filter</Text>
         <TouchableOpacity onPress={closeModal}>
           <Icon name="close" color="black" size={30} />
         </TouchableOpacity>
       </View>
-      <View style={styles.sort}>
-        <Text style={styles.sortText}>Sort by</Text>
+      <View style={styles.component}>
+        <Text style={styles.title}>Sort by</Text>
         {radioButtons.map(value => (
           <RadioButton
             id={value.id}
@@ -73,8 +95,8 @@ const FilterModal = ({closeModal}: IFilterModal) => {
           />
         ))}
       </View>
-      <View style={styles.sort}>
-        <Text style={styles.sortText}>Select gender: </Text>
+      <View style={styles.component}>
+        <Text style={styles.title}>Select gender: </Text>
         <Checkbox
           value={isChecked.man}
           label="Man"
@@ -95,7 +117,65 @@ const FilterModal = ({closeModal}: IFilterModal) => {
           }
         />
       </View>
-    </View>
+      <View style={styles.component}>
+        <Text style={styles.title}>Price</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View>
+            <View style={styles.priceBox}>
+              <Text style={styles.textWidth}>From</Text>
+              <TextInput
+                keyboardType="numeric"
+                value={price}
+                style={styles.numericInput}
+                onChangeText={value => priceHandler(value, 'price')}
+              />
+              <Text style={styles.dolar}>$</Text>
+            </View>
+            <View style={styles.priceBox}>
+              <Text style={styles.textWidth}>To</Text>
+              <TextInput
+                keyboardType="numeric"
+                value={toPrice}
+                style={styles.numericInput}
+                onChangeText={value => priceHandler(value, 'toPrice')}
+              />
+              <Text style={styles.dolar}>$</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.saveButton}>
+            <Text
+              style={{
+                color: 'white',
+              }}>
+              Save
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.component}>
+        <Text style={styles.title}>Filter by colors</Text>
+        <View style={styles.colorContainer}>
+          {colorsData?.map(color => (
+            <View
+              style={{
+                width: '25%',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+              }}>
+              <TouchableOpacity
+                key={color}
+                style={[
+                  styles.color,
+                  {
+                    backgroundColor: color,
+                    borderColor: color === 'white' ? 'black' : color,
+                  },
+                ]}></TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -104,6 +184,7 @@ export default FilterModal;
 const styles = StyleSheet.create({
   container: {
     height: '100%',
+    position: 'absolute',
     backgroundColor: 'white',
   },
   header: {
@@ -117,24 +198,75 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: 'black',
   },
-  sort: {
+  component: {
     width: Dimensions.get('window').width,
     alignItems: 'flex-start',
     marginTop: 16,
     paddingLeft: 16,
-    paddingBottom: 10,
+    paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'gray',
   },
   itemSort: {
     alignItems: 'flex-start',
-    color: 'black',
     fontSize: 16,
+    color: 'black',
   },
-  sortText: {
+  title: {
     marginBottom: 10,
     fontSize: 20,
     color: 'black',
   },
-  gender: {},
+  numericInput: {
+    position: 'relative',
+    width: 200,
+    height: 40,
+    paddingRight: 30,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: 'black',
+    fontSize: 16,
+  },
+  priceBox: {
+    marginTop: 5,
+    marginLeft: 10,
+  },
+  textWidth: {
+    width: 50,
+    marginBottom: 5,
+    fontSize: 17,
+    color: 'black',
+  },
+  dolar: {
+    position: 'absolute',
+    top: 33,
+    right: 6,
+    padding: 5,
+    borderRadius: 100,
+    color: 'black',
+    backgroundColor: 'rgb(221, 220, 220);',
+  },
+  colorContainer: {
+    width: 280,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginLeft: 10,
+  },
+  color: {
+    width: 35,
+    height: 35,
+    flexWrap: 'wrap',
+    marginTop: 12,
+    borderWidth: 1,
+    borderRadius: 100,
+  },
+  saveButton: {
+    width: 80,
+    height: 26,
+    borderRadius: 10,
+    marginLeft: 40,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

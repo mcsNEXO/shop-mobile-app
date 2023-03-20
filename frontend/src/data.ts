@@ -326,3 +326,13 @@ export const categoryData = {
     },
   ],
 };
+
+export const colorsData = [
+  'black',
+  'gray',
+  'white',
+  'brown',
+  'red',
+  'green',
+  'pink',
+];
