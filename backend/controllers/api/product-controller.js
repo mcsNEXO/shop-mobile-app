@@ -50,9 +50,20 @@ class ProductController {
             "size.0": {
               $exists: true,
             },
-            gender: params.gender ? params.gender : { $exists: true },
+            gender:
+              params.gender.length > 0
+                ? {
+                    $in: params.gender,
+                  }
+                : { $exists: true },
             category: params.category ? params.category : { $exists: true },
             type: params.type ? params.type : { $exists: true },
+            price: params.price
+              ? {
+                  $gt: Number(params?.price.split("-")[0]),
+                  $lt: Number(params.price.split("-")[1]),
+                }
+              : { $exists: true },
           },
         },
         {
@@ -61,7 +72,6 @@ class ProductController {
           },
         },
       ]);
-      console.log(products);
       return res.status(200).json({ products });
     } catch (err) {
       console.log(err);
@@ -69,7 +79,6 @@ class ProductController {
   }
 
   async getProduct(req, res) {
-    console.log(req.body);
     let products;
     try {
       if (req.body.type === "shoes") {

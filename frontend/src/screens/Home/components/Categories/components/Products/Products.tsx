@@ -26,11 +26,12 @@ const Products = () => {
   };
 
   const getData = async () => {
+    console.log('s');
     try {
       const data = {
         type: route.params.type.toLowerCase(),
         category: route?.params.category.toLowerCase(),
-        gender: route?.params.gender.toLowerCase(),
+        gender: [route?.params.gender.toLowerCase()],
       };
       const res = await axios.post('get-searched-products', data);
       return setProducts(res.data.products);
@@ -75,13 +76,41 @@ const Products = () => {
                   }>{`${item.gender}'s ${item.type}`}</Text>
                 <Text style={styles.textPrice}>{item.price}$</Text>
               </View>
+              <View style={styles.moreColors}>
+                {item.colors.map((color: any) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.color,
+                      {
+                        backgroundColor: color,
+                        borderColor: color === 'white' ? 'black' : color,
+                      },
+                    ]}></TouchableOpacity>
+                ))}
+              </View>
             </View>
           );
         }}
       />
-      {openedFilterModal && (
-        <FilterModal closeModal={() => handleOpenedFilterModal(false)} />
-      )}
+      {/* {openedFilterModal && (
+        <FilterModal
+          products={products}
+          setProducts={setProducts}
+          closeModal={() => handleOpenedFilterModal(false)}
+        />
+      )} */}
+      <View
+        style={{
+          opacity: openedFilterModal ? 1 : 0,
+          height: openedFilterModal ? '100%' : 0,
+        }}>
+        <FilterModal
+          products={products}
+          setProducts={setProducts}
+          closeModal={() => handleOpenedFilterModal(false)}
+        />
+      </View>
+
       {!openedFilterModal && (
         <View style={styles.iconBox}>
           <TouchableOpacity onPress={() => handleOpenedFilterModal(true)}>
@@ -154,5 +183,17 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
+  },
+  moreColors: {
+    flexDirection: 'row',
+    marginTop: 10,
+    paddingLeft: 6,
+  },
+  color: {
+    marginLeft: 6,
+    width: 16,
+    height: 16,
+    borderRadius: 100,
+    borderWidth: 1,
   },
 });
