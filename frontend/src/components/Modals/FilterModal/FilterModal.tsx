@@ -6,7 +6,7 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import SortBy from './components/SortBy';
 import CheckBoxes from './components/CheckBoxes';
 import PriceInputs from './components/PriceInputs';
@@ -14,22 +14,45 @@ import Colors from './components/Colors';
 import Header from './components/Header';
 import BottomButtons from './components/BottomButtons';
 import axios from '../../../axios';
-import useCategory from '../../../hooks/useCategory';
+
+interface IdefaultValues {
+  sortedBy: string;
+  price: string;
+  toPrice: string;
+  colors: string[];
+  genders: any[];
+}
+
 interface IFilterModal {
   closeModal: () => void;
   setProducts: React.Dispatch<React.SetStateAction<any[] | undefined>>;
-  products: any;
+  values: any;
+  setValues: React.Dispatch<React.SetStateAction<IdefaultValues>>;
+  defaultValues: IdefaultValues;
 }
 
-const FilterModal = ({closeModal, setProducts, products}: IFilterModal) => {
-  const {category} = useCategory();
+const FilterModal = ({
+  closeModal,
+  setProducts,
+  values,
+  setValues,
+  defaultValues,
+}: IFilterModal) => {
   const ALLOW_NUMBERS = '0123456789';
+  const [sortedBy, setSortedBy] = React.useState<string>(values.sortedBy);
+  const [price, setPrice] = React.useState<string>(values.price);
+  const [toPrice, setToPrice] = React.useState<string>(values.toPrice);
+  const [colors, setColors] = React.useState<string[]>(values.colors);
+  const [genders, setGenders] = React.useState(values.genders);
 
-  const [sortedBy, setSortedBy] = React.useState<string>('featured');
-  const [price, setPrice] = React.useState<string>('0');
-  const [toPrice, setToPrice] = React.useState<string>('1000');
-  const [colors, setColors] = React.useState<string[]>([]);
-  const [genders, setGenders] = React.useState([category.toLowerCase()]);
+  const resetValues = () => {
+    setSortedBy(defaultValues.sortedBy);
+    setPrice(defaultValues.price);
+    setToPrice(defaultValues.toPrice);
+    setColors(defaultValues.colors);
+    setGenders(defaultValues.genders);
+    setValues(defaultValues);
+  };
 
   const priceHandler = (text: string, type: string) => {
     let newPrice = '';
@@ -83,6 +106,7 @@ const FilterModal = ({closeModal, setProducts, products}: IFilterModal) => {
     }
   };
   const saveFiltersData = async () => {
+    setValues({sortedBy, price, toPrice, colors, genders});
     if (!price || !toPrice) checkIsEmptyInput();
     const url = {
       colors: colors.length > 0 ? colors : null,
@@ -123,13 +147,11 @@ const FilterModal = ({closeModal, setProducts, products}: IFilterModal) => {
       </ScrollView>
       {/* <BottomButtons /> */}
       <View style={styles.bottomButtons}>
-        <TouchableOpacity style={styles.bottomBtn}>
+        <TouchableOpacity style={styles.bottomBtn} onPress={() => resetValues}>
           <Text style={styles.textBtn}>Reset</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottomBtn} onPress={saveFiltersData}>
-          <Text style={styles.textBtn} onPress={saveFiltersData}>
-            Save
-          </Text>
+          <Text style={styles.textBtn}>Save</Text>
         </TouchableOpacity>
       </View>
     </View>

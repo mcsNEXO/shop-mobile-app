@@ -16,11 +16,24 @@ import FilterModal from '../../../../../../components/Modals/FilterModal/FilterM
 
 const Products = () => {
   const route: any = useRoute();
+  const defaultValues = {
+    sortedBy: 'featured',
+    price: '0',
+    toPrice: '1000',
+    colors: [],
+    genders: [route?.params.gender.toLowerCase()],
+  };
 
   const [products, setProducts] = React.useState<any[]>();
+  const [values, setValues] = React.useState<{
+    sortedBy: string;
+    price: string;
+    toPrice: string;
+    colors: string[];
+    genders: any[];
+  }>(defaultValues);
   const [openedFilterModal, setOpendFilterModal] =
     React.useState<boolean>(false);
-
   const handleOpenedFilterModal = (value: boolean) => {
     return setOpendFilterModal(value);
   };
@@ -92,25 +105,15 @@ const Products = () => {
           );
         }}
       />
-      {/* {openedFilterModal && (
+      {openedFilterModal && (
         <FilterModal
-          products={products}
+          values={values}
+          defaultValues={defaultValues}
+          setValues={setValues}
           setProducts={setProducts}
           closeModal={() => handleOpenedFilterModal(false)}
         />
-      )} */}
-      <View
-        style={{
-          opacity: openedFilterModal ? 1 : 0,
-          height: openedFilterModal ? '100%' : 0,
-        }}>
-        <FilterModal
-          products={products}
-          setProducts={setProducts}
-          closeModal={() => handleOpenedFilterModal(false)}
-        />
-      </View>
-
+      )}
       {!openedFilterModal && (
         <View style={styles.iconBox}>
           <TouchableOpacity onPress={() => handleOpenedFilterModal(true)}>
@@ -190,9 +193,9 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
   },
   color: {
-    marginLeft: 6,
     width: 16,
     height: 16,
+    marginLeft: 6,
     borderRadius: 100,
     borderWidth: 1,
   },
