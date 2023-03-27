@@ -4,96 +4,155 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  ScrollView,
 } from 'react-native';
-import React from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {RadioButton} from 'react-native-radio-buttons-group';
-import Checkbox from '../../Checkbox/Checkbox';
-interface IFilterModal {
-  closeModal: () => void;
+import React, {useEffect} from 'react';
+import SortBy from './components/SortBy';
+import CheckBoxes from './components/CheckBoxes';
+import PriceInputs from './components/PriceInputs';
+import Colors from './components/Colors';
+import Header from './components/Header';
+import BottomButtons from './components/BottomButtons';
+import axios from '../../../axios';
+
+interface IdefaultValues {
+  sortedBy: string;
+  price: string;
+  toPrice: string;
+  colors: string[];
+  genders: any[];
 }
 
-const FilterModal = ({closeModal}: IFilterModal) => {
-  const [sortedBy, setSortedBy] = React.useState<string>('1');
-  const [isChecked, setIsChecked] = React.useState({
-    man: false,
-    woman: false,
-    kids: false,
-  });
+interface IFilterModal {
+  closeModal: () => void;
+  setProducts: React.Dispatch<React.SetStateAction<any[] | undefined>>;
+  values: any;
+  setValues: React.Dispatch<React.SetStateAction<IdefaultValues>>;
+  defaultValues: IdefaultValues;
+}
 
-  const radioButtons = [
-    {
-      id: '1',
-      label: 'Featured',
-      value: 'featured',
-      selected: false,
-    },
-    {
-      id: '2',
-      label: 'Newest',
-      value: 'newest',
-      selected: false,
-    },
-    {
-      id: '3',
-      label: 'Price: High-Low',
-      value: 'high-low',
-      selected: false,
-    },
-    {
-      id: '4',
-      label: 'Price: Low-High',
-      value: 'low-high',
-      selected: false,
-    },
-  ];
+const FilterModal = ({
+  closeModal,
+  setProducts,
+  values,
+  setValues,
+  defaultValues,
+}: IFilterModal) => {
+  const ALLOW_NUMBERS = '0123456789';
+  const [sortedBy, setSortedBy] = React.useState<string>(values.sortedBy);
+  const [price, setPrice] = React.useState<string>(values.price);
+  const [toPrice, setToPrice] = React.useState<string>(values.toPrice);
+  const [colors, setColors] = React.useState<string[]>(values.colors);
+  const [genders, setGenders] = React.useState(values.genders);
+
+  const resetValues = () => {
+    setSortedBy(defaultValues.sortedBy);
+    setPrice(defaultValues.price);
+    setToPrice(defaultValues.toPrice);
+    setColors(defaultValues.colors);
+    setGenders(defaultValues.genders);
+    setValues(defaultValues);
+  };
+
+  const priceHandler = (text: string, type: string) => {
+    let newPrice = '';
+    for (let i = 0; i < text.length; i++) {
+      if (ALLOW_NUMBERS.indexOf(text[i]) > -1) {
+        newPrice = newPrice + text[i];
+      } else {
+        return;
+      }
+    }
+    type === 'toPrice' ? setToPrice(newPrice) : setPrice(newPrice);
+  };
+
+  const colorsHandler = (color: string) => {
+    if (colors.length === 0) {
+      let newColors = [color];
+      setColors(newColors);
+    } else {
+      const index = colors.indexOf(color);
+      if (index !== -1) {
+        colors.splice(index, 1);
+        setColors([...colors]);
+      } else {
+        let newColors = [...colors, color];
+        setColors(newColors);
+      }
+    }
+  };
+
+  const setGenderHandler = (gender: string) => {
+    if (genders.length === 0) {
+      let genderArr = [gender];
+      setGenders(genderArr);
+    } else {
+      const index = genders.indexOf(gender);
+      if (index !== -1) {
+        genders.splice(index, 1);
+        setGenders([...genders]);
+      } else {
+        let genderArr = [...genders, gender];
+        setGenders(genderArr);
+      }
+    }
+  };
+  const checkIsEmptyInput = () => {
+    if (toPrice === '') {
+      setToPrice('1000');
+    }
+    if (price === '') {
+      setPrice('0');
+    }
+  };
+  const saveFiltersData = async () => {
+    setValues({sortedBy, price, toPrice, colors, genders});
+    if (!price || !toPrice) checkIsEmptyInput();
+    const url = {
+      colors: colors.length > 0 ? colors : null,
+      size: [].length > 0 ? colors : null,
+      sort: sortedBy,
+      gender: genders,
+      price: `${price ? price : '0'}-${toPrice ? toPrice : '1000'}`,
+    };
+    const res = await axios.post('get-shoes', {url});
+    setProducts(res.data.shoes);
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Sort and filter</Text>
-        <TouchableOpacity onPress={closeModal}>
-          <Icon name="close" color="black" size={30} />
+      <ScrollView>
+        <Header closeModal={closeModal} />
+        <SortBy
+          sortedBy={sortedBy}
+          setSortedBy={setSortedBy}
+          style={styles.component}
+        />
+        <CheckBoxes
+          genders={genders}
+          setGenderHandler={setGenderHandler}
+          style={styles.component}
+        />
+        <PriceInputs
+          price={price}
+          toPrice={toPrice}
+          priceHandler={priceHandler}
+          style={styles.component}
+        />
+        <Colors
+          colorsHandler={colorsHandler}
+          colors={colors}
+          style={styles.component}
+        />
+      </ScrollView>
+      {/* <BottomButtons /> */}
+      <View style={styles.bottomButtons}>
+        <TouchableOpacity style={styles.bottomBtn} onPress={() => resetValues}>
+          <Text style={styles.textBtn}>Reset</Text>
         </TouchableOpacity>
-      </View>
-      <View style={styles.sort}>
-        <Text style={styles.sortText}>Sort by</Text>
-        {radioButtons.map(value => (
-          <RadioButton
-            id={value.id}
-            key={value.id}
-            label={value.label}
-            value={value.value}
-            selected={value.id === sortedBy}
-            size={22}
-            labelStyle={styles.itemSort}
-            onPress={value => {
-              setSortedBy(value);
-            }}
-          />
-        ))}
-      </View>
-      <View style={styles.sort}>
-        <Text style={styles.sortText}>Select gender: </Text>
-        <Checkbox
-          value={isChecked.man}
-          label="Man"
-          setIsChecked={() => setIsChecked({...isChecked, man: !isChecked.man})}
-        />
-        <Checkbox
-          value={isChecked.woman}
-          label="Woman"
-          setIsChecked={() =>
-            setIsChecked({...isChecked, woman: !isChecked.woman})
-          }
-        />
-        <Checkbox
-          value={isChecked.kids}
-          label="Kids"
-          setIsChecked={() =>
-            setIsChecked({...isChecked, kids: !isChecked.kids})
-          }
-        />
+        <TouchableOpacity style={styles.bottomBtn} onPress={saveFiltersData}>
+          <Text style={styles.textBtn}>Save</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -103,38 +162,47 @@ export default FilterModal;
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    backgroundColor: 'white',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    borderBottomWidth: 0.2,
-    borderBottomColor: 'black',
-  },
-  headerText: {
-    fontSize: 22,
-    color: 'black',
-  },
-  sort: {
+  component: {
     width: Dimensions.get('window').width,
     alignItems: 'flex-start',
     marginTop: 16,
     paddingLeft: 16,
-    paddingBottom: 10,
+    paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'gray',
   },
-  itemSort: {
-    alignItems: 'flex-start',
-    color: 'black',
-    fontSize: 16,
+  saveButton: {
+    width: 80,
+    height: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 40,
+    borderRadius: 10,
+    backgroundColor: 'black',
   },
-  sortText: {
-    marginBottom: 10,
-    fontSize: 20,
-    color: 'black',
+  bottomButtons: {
+    width: Dimensions.get('window').width,
+    height: 70,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: 'black',
+    backgroundColor: 'white',
   },
-  gender: {},
+  bottomBtn: {
+    width: Dimensions.get('window').width / 4,
+    height: Dimensions.get('window').width / 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    backgroundColor: 'black',
+  },
+  textBtn: {
+    fontSize: 17,
+    color: 'white',
+  },
 });

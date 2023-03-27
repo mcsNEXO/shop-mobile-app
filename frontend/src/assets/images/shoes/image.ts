@@ -3,12 +3,12 @@ export const IMAGENAME = {
     white: require('./shoes-air-force-white.png'),
     black: require('./shoes-air-force-black.png'),
   },
-  jordan: {
+  airjordan: {
     white: require('./shoes-air-jordan-white.png'),
     red: require('./shoes-air-jordan-red.png'),
     black: require('./shoes-air-jordan-black.png'),
   },
-  max97: {
+  airmax97: {
     white: require('./shoes-air-jordan-white.png'),
   },
 };

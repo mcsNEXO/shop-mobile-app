@@ -16,21 +16,35 @@ import FilterModal from '../../../../../../components/Modals/FilterModal/FilterM
 
 const Products = () => {
   const route: any = useRoute();
+  const defaultValues = {
+    sortedBy: 'featured',
+    price: '0',
+    toPrice: '1000',
+    colors: [],
+    genders: [route?.params.gender.toLowerCase()],
+  };
 
   const [products, setProducts] = React.useState<any[]>();
+  const [values, setValues] = React.useState<{
+    sortedBy: string;
+    price: string;
+    toPrice: string;
+    colors: string[];
+    genders: any[];
+  }>(defaultValues);
   const [openedFilterModal, setOpendFilterModal] =
     React.useState<boolean>(false);
-
   const handleOpenedFilterModal = (value: boolean) => {
     return setOpendFilterModal(value);
   };
 
   const getData = async () => {
+    console.log('s');
     try {
       const data = {
         type: route.params.type.toLowerCase(),
         category: route?.params.category.toLowerCase(),
-        gender: route?.params.gender.toLowerCase(),
+        gender: [route?.params.gender.toLowerCase()],
       };
       const res = await axios.post('get-searched-products', data);
       return setProducts(res.data.products);
@@ -75,12 +89,30 @@ const Products = () => {
                   }>{`${item.gender}'s ${item.type}`}</Text>
                 <Text style={styles.textPrice}>{item.price}$</Text>
               </View>
+              <View style={styles.moreColors}>
+                {item.colors.map((color: any) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.color,
+                      {
+                        backgroundColor: color,
+                        borderColor: color === 'white' ? 'black' : color,
+                      },
+                    ]}></TouchableOpacity>
+                ))}
+              </View>
             </View>
           );
         }}
       />
       {openedFilterModal && (
-        <FilterModal closeModal={() => handleOpenedFilterModal(false)} />
+        <FilterModal
+          values={values}
+          defaultValues={defaultValues}
+          setValues={setValues}
+          setProducts={setProducts}
+          closeModal={() => handleOpenedFilterModal(false)}
+        />
       )}
       {!openedFilterModal && (
         <View style={styles.iconBox}>
@@ -154,5 +186,17 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
+  },
+  moreColors: {
+    flexDirection: 'row',
+    marginTop: 10,
+    paddingLeft: 6,
+  },
+  color: {
+    width: 16,
+    height: 16,
+    marginLeft: 6,
+    borderRadius: 100,
+    borderWidth: 1,
   },
 });
