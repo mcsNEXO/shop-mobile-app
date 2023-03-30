@@ -14,20 +14,39 @@ import Colors from './components/Colors';
 import Header from './components/Header';
 import BottomButtons from './components/BottomButtons';
 import axios from '../../../axios';
+import Size from './components/Size';
 
 interface IdefaultValues {
-  sortedBy: string;
+  sortedBy: {
+    value: string;
+    sort: number;
+    label?: string;
+  };
   price: string;
   toPrice: string;
   colors: string[];
   genders: any[];
+  sizes: number[];
 }
 
 interface IFilterModal {
   closeModal: () => void;
   setProducts: React.Dispatch<React.SetStateAction<any[] | undefined>>;
   values: any;
-  setValues: React.Dispatch<React.SetStateAction<IdefaultValues>>;
+  setValues: React.Dispatch<
+    React.SetStateAction<{
+      sortedBy: {
+        value: string;
+        sort: number;
+        label?: string;
+      };
+      price: string;
+      toPrice: string;
+      colors: string[];
+      genders: any[];
+      sizes: number[];
+    }>
+  >;
   defaultValues: IdefaultValues;
 }
 
@@ -39,11 +58,15 @@ const FilterModal = ({
   defaultValues,
 }: IFilterModal) => {
   const ALLOW_NUMBERS = '0123456789';
-  const [sortedBy, setSortedBy] = React.useState<string>(values.sortedBy);
+  const [sortedBy, setSortedBy] = React.useState<{
+    value: string;
+    sort: number;
+  }>(values.sortedBy);
   const [price, setPrice] = React.useState<string>(values.price);
   const [toPrice, setToPrice] = React.useState<string>(values.toPrice);
   const [colors, setColors] = React.useState<string[]>(values.colors);
-  const [genders, setGenders] = React.useState(values.genders);
+  const [genders, setGenders] = React.useState<string[]>(values.genders);
+  const [sizes, setSizes] = React.useState<number[]>(values.sizes);
 
   const resetValues = () => {
     setSortedBy(defaultValues.sortedBy);
@@ -51,6 +74,7 @@ const FilterModal = ({
     setToPrice(defaultValues.toPrice);
     setColors(defaultValues.colors);
     setGenders(defaultValues.genders);
+    setSizes(defaultValues.sizes);
     setValues(defaultValues);
   };
 
@@ -64,6 +88,22 @@ const FilterModal = ({
       }
     }
     type === 'toPrice' ? setToPrice(newPrice) : setPrice(newPrice);
+  };
+
+  const sizesHandler = (size: number) => {
+    if (sizes.length === 0) {
+      let newSizes = [size];
+      setSizes(newSizes);
+    } else {
+      const index = sizes.indexOf(size);
+      if (index !== -1) {
+        sizes.splice(index, 1);
+        setSizes([...sizes]);
+      } else {
+        let newSizes = [...sizes, size];
+        setSizes(newSizes);
+      }
+    }
   };
 
   const colorsHandler = (color: string) => {
@@ -106,7 +146,7 @@ const FilterModal = ({
     }
   };
   const saveFiltersData = async () => {
-    setValues({sortedBy, price, toPrice, colors, genders});
+    setValues({sortedBy, price, toPrice, colors, genders, sizes});
     if (!price || !toPrice) checkIsEmptyInput();
     const url = {
       colors: colors.length > 0 ? colors : null,
@@ -114,9 +154,11 @@ const FilterModal = ({
       sort: sortedBy,
       gender: genders,
       price: `${price ? price : '0'}-${toPrice ? toPrice : '1000'}`,
+      sizes: sizes.length > 0 ? sizes : null,
     };
     const res = await axios.post('get-shoes', {url});
     setProducts(res.data.shoes);
+    closeModal();
   };
 
   return (
@@ -144,10 +186,15 @@ const FilterModal = ({
           colors={colors}
           style={styles.component}
         />
+        <Size
+          style={styles.component}
+          sizes={sizes}
+          sizesHandler={sizesHandler}
+        />
       </ScrollView>
       {/* <BottomButtons /> */}
       <View style={styles.bottomButtons}>
-        <TouchableOpacity style={styles.bottomBtn} onPress={() => resetValues}>
+        <TouchableOpacity style={styles.bottomBtn} onPress={resetValues}>
           <Text style={styles.textBtn}>Reset</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottomBtn} onPress={saveFiltersData}>

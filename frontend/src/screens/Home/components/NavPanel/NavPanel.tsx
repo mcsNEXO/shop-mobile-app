@@ -31,5 +31,6 @@ export default NavPanel;
 const styles = StyleSheet.create({
   flatList: {
     width: '100%',
+    color: 'black',
   },
 });

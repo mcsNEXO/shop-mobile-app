@@ -8,34 +8,45 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import axios from '../../../../../../axios';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
 import FilterModal from '../../../../../../components/Modals/FilterModal/FilterModal';
+import PrevButton from '../../../../../../components/Buttons/PrevButton';
 
 const Products = () => {
   const route: any = useRoute();
+  const navigation = useNavigation();
   const defaultValues = {
-    sortedBy: 'featured',
+    sortedBy: {
+      value: 'name',
+      sort: 1,
+    },
     price: '0',
     toPrice: '1000',
     colors: [],
     genders: [route?.params.gender.toLowerCase()],
+    sizes: [],
   };
 
   const [products, setProducts] = React.useState<any[]>();
   const [values, setValues] = React.useState<{
-    sortedBy: string;
+    sortedBy: {
+      value: string;
+      sort: number;
+      label?: string;
+    };
     price: string;
     toPrice: string;
     colors: string[];
     genders: any[];
+    sizes: number[];
   }>(defaultValues);
   const [openedFilterModal, setOpendFilterModal] =
     React.useState<boolean>(false);
   const handleOpenedFilterModal = (value: boolean) => {
-    return setOpendFilterModal(value);
+    setOpendFilterModal(!openedFilterModal);
   };
 
   const getData = async () => {
@@ -56,6 +67,17 @@ const Products = () => {
   React.useEffect(() => {
     getData();
   }, []);
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <PrevButton
+          openedFilterModal={openedFilterModal}
+          setOpenedFilterModal={setOpendFilterModal}
+        />
+      ),
+    });
+  }, [openedFilterModal]);
 
   const getStyles = (index: number, productsLength: number | undefined) => {
     if (productsLength === undefined) return;
@@ -90,8 +112,9 @@ const Products = () => {
                 <Text style={styles.textPrice}>{item.price}$</Text>
               </View>
               <View style={styles.moreColors}>
-                {item.colors.map((color: any) => (
+                {item.colors.map((color: string, index: number) => (
                   <TouchableOpacity
+                    key={index}
                     style={[
                       styles.color,
                       {
@@ -141,6 +164,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     borderWidth: 1,
     borderColor: 'white',
+    marginBottom: 10,
   },
   iconBox: {
     width: 50,
@@ -161,6 +185,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderWidth: 1,
     borderColor: 'white',
+    marginBottom: 10,
   },
   text: {
     fontSize: 16,

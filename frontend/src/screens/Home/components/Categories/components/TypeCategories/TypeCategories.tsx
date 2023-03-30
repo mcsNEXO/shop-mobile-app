@@ -31,7 +31,7 @@ const TypeCategories = (props: any) => {
                   category: item.name,
                 })
               }>
-              <Text>{item.name}</Text>
+              <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -52,10 +52,14 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 50,
     justifyContent: 'center',
+    borderColor: 'black',
     shadowColor: 'black',
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
     backgroundColor: 'white',
+  },
+  text: {
+    color: 'black',
   },
 });

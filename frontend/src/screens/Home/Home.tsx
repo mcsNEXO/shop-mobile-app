@@ -7,6 +7,10 @@ import Products from './components/Categories/components/Products/Products';
 const Stack = createNativeStackNavigator();
 
 const Home = () => {
+  const func = () => {
+    console.log('new');
+  };
+
   return (
     <Stack.Navigator
       initialRouteName="Categories"

@@ -2,8 +2,14 @@ import {View, Text, StyleSheet} from 'react-native';
 import {RadioButton} from 'react-native-radio-buttons-group';
 
 interface ISortBy {
-  sortedBy: string;
-  setSortedBy: (arr: string) => void;
+  sortedBy: {value: string; sort: number; label?: string};
+  setSortedBy: React.Dispatch<
+    React.SetStateAction<{
+      value: string;
+      sort: number;
+      label?: string;
+    }>
+  >;
   style: any;
 }
 
@@ -12,29 +18,46 @@ const SortBy = ({sortedBy, setSortedBy, style}: ISortBy) => {
     {
       id: '1',
       label: 'Featured',
-      value: 'featured',
+      value: 'name',
+      sort: 1,
       selected: false,
     },
     {
       id: '2',
       label: 'Newest',
-      value: 'newest',
+      value: 'date',
+      sort: 1,
       selected: false,
     },
     {
       id: '3',
       label: 'Price: High-Low',
       value: 'high-low',
+      sort: -1,
       selected: false,
     },
     {
       id: '4',
       label: 'Price: Low-High',
       value: 'low-high',
+      sort: 1,
       selected: false,
     },
   ];
-
+  const handler = (value: string, sort: number) => {
+    if (value === 'high-low') {
+      setSortedBy({value: 'price', sort, label: 'high-low'});
+    } else if (value === 'low-high') {
+      setSortedBy({value: 'price', sort, label: 'low-high'});
+    } else {
+      const obj = {
+        value: value,
+        sort: sort,
+      };
+      setSortedBy(obj);
+    }
+    console.log(value, sort);
+  };
   return (
     <View style={style}>
       <Text style={styles.title}>Sort by</Text>
@@ -44,11 +67,13 @@ const SortBy = ({sortedBy, setSortedBy, style}: ISortBy) => {
           key={value.id}
           label={value.label}
           value={value.value}
-          selected={value.value === sortedBy}
+          selected={
+            value.value === sortedBy.value || value.value === sortedBy.label
+          }
           size={22}
           labelStyle={styles.itemSort}
-          onPress={(value: string) => {
-            setSortedBy(radioButtons[Number(value) - 1].value);
+          onPress={(vl: string) => {
+            handler(radioButtons[Number(vl) - 1].value, value.sort);
           }}
         />
       ))}

@@ -21,7 +21,7 @@ const Categories = () => {
               navigation.getParent('header').setOptions({headerShown: false}),
                 navigation.navigate('TypeCategories', {type: item.name});
             }}>
-            <Text>{item?.name}</Text>
+            <Text style={styles.text}>{item?.name}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -40,10 +40,14 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     shadowColor: 'black',
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderRadius: 5,
+    borderColor: 'black',
     padding: 10,
     backgroundColor: 'white',
+  },
+  text: {
+    color: 'black',
   },
 });
 
