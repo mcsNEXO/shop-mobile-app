@@ -17,7 +17,7 @@ import PrevButton from '../../../../../../components/Buttons/PrevButton';
 
 const Products = () => {
   const route: any = useRoute();
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
   const defaultValues = {
     sortedBy: {
       value: 'name',
@@ -101,8 +101,23 @@ const Products = () => {
         keyExtractor={(_, index) => index.toString()}
         renderItem={({item, index}: {item: any; index: number}) => {
           return (
-            <View style={getStyles(index, products?.length)}>
-              <Image source={IMAGENAME.airforce.white} style={styles.image} />
+            <TouchableOpacity
+              style={getStyles(index, products?.length)}
+              onPress={() => {
+                navigation.navigate('Product', {
+                  title: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                  productId: item._id,
+                  color: item?.colors[item?.index],
+                });
+              }}>
+              <Image
+                source={
+                  IMAGENAME[item.name.replaceAll(' ', '')][
+                    item.colors[item.index]
+                  ]
+                }
+                style={styles.image}
+              />
               <View style={styles.desc}>
                 <Text style={styles.text}>{item.name}</Text>
                 <Text
@@ -113,7 +128,7 @@ const Products = () => {
               </View>
               <View style={styles.moreColors}>
                 {item.colors.map((color: string, index: number) => (
-                  <TouchableOpacity
+                  <View
                     key={index}
                     style={[
                       styles.color,
@@ -121,10 +136,10 @@ const Products = () => {
                         backgroundColor: color,
                         borderColor: color === 'white' ? 'black' : color,
                       },
-                    ]}></TouchableOpacity>
+                    ]}></View>
                 ))}
               </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
       />

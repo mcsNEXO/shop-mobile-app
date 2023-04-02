@@ -3,14 +3,11 @@ import Categories from './components/Categories/Categories';
 import TypeCategories from '../../screens/Home/components/Categories/components/TypeCategories/TypeCategories';
 import PrevButton from '../../components/Buttons/PrevButton';
 import Products from './components/Categories/components/Products/Products';
+import Product from './components/Categories/components/Product/Product';
 
 const Stack = createNativeStackNavigator();
 
 const Home = () => {
-  const func = () => {
-    console.log('new');
-  };
-
   return (
     <Stack.Navigator
       initialRouteName="Categories"
@@ -35,6 +32,13 @@ const Home = () => {
         component={Products}
         options={({route}: any) => ({
           title: route.params?.category,
+        })}
+      />
+      <Stack.Screen
+        name="Product"
+        component={Product}
+        options={({route}: any) => ({
+          title: route.params?.title,
         })}
       />
     </Stack.Navigator>
