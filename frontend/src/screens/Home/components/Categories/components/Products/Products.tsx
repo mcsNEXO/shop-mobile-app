@@ -92,7 +92,6 @@ const Products = () => {
     }
     return styles.box;
   };
-
   return (
     <View style={styles.container}>
       <FlatList

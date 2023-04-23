@@ -10,17 +10,14 @@ interface IPrevButton {
 const PrevButton = ({openedFilterModal, setOpenedFilterModal}: IPrevButton) => {
   const navigation = useNavigation();
   const route = useRoute();
+  console.log('routing',route)
   return (
     <TouchableOpacity
       onPress={() => {
-        if (openedFilterModal === true) {
-          if (setOpenedFilterModal) return setOpenedFilterModal(false);
-        }
+        // if (openedFilterModal === true) {
+        //   if (setOpenedFilterModal) return setOpenedFilterModal(false);
+        // }
         navigation.goBack();
-        route.name === 'TypeCategories' &&
-          navigation
-            .getParent('header' as any)
-            ?.setOptions({headerShown: true});
       }}>
       <Icon name="arrow-back" size={25} style={{width: 40}} color="black" />
     </TouchableOpacity>

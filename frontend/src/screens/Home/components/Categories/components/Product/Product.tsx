@@ -47,7 +47,7 @@ const Product = () => {
       console.log(err);
     }
   };
-
+  console.log(route)
   return (
     <>
       <ScrollView style={styles.container}>
@@ -60,7 +60,7 @@ const Product = () => {
             }
             style={styles.image}
           />
-        )}
+        )} 
         <ScrollView style={styles.imagesContainer} horizontal>
           {product?.colors.map((color: string, index: number) => {
             return (

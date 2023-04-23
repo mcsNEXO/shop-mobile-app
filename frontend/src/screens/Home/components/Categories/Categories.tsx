@@ -1,31 +1,42 @@
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import useCategory from '../../../../hooks/useCategory';
-import {useNavigation} from '@react-navigation/native';
+import React from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {categoryData} from '../../../../data';
+import SideBar from '../SideBar/SideBar';
+import Header from '../../../../components/Header/Header';
+import NavPanel from '../NavPanel/NavPanel';
 
 const Categories = () => {
-  const {category} = useCategory();
   const navigation: any = useNavigation();
+  const {category} = useCategory();
   const type = categoryData?.categoryList?.find(
     e => e?.name === category,
   )?.children;
+  const [opened, setOpened] = React.useState<boolean>(false);
 
   return (
-    <FlatList
-      data={type}
-      renderItem={({item, index}) => (
-        <View style={styles.container} key={index}>
-          <TouchableOpacity
-            style={styles.category}
-            onPress={() => {
-              navigation.getParent('header').setOptions({headerShown: false}),
+    <>
+      <SideBar opened={opened} setOpened={setOpened} />
+      <View style={styles.header}>
+        <Header toggleOpened={() => setOpened(true)} />
+        <NavPanel />
+      </View>
+      <FlatList
+        data={type}
+        renderItem={({item, index}) => (
+          <View style={styles.container} key={index}>
+            <TouchableOpacity
+              style={styles.category}
+              onPress={() => {
                 navigation.navigate('TypeCategories', {type: item.name});
-            }}>
-            <Text style={styles.text}>{item?.name}</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    />
+              }}>
+              <Text style={styles.text}>{item?.name}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+    </>
   );
 };
 
@@ -34,6 +45,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
     gap: 10,
+  },
+  header: {
+    height: 'auto',
   },
   category: {
     width: '80%',
@@ -47,6 +61,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   text: {
+    color: 'black',
+  },
+  option: {
+    width: '100%',
+    height: 44,
+    justifyContent: 'center',
+    alignContent: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
+  },
+  textOption: {
+    fontSize: 16,
     color: 'black',
   },
 });

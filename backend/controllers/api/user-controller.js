@@ -10,13 +10,15 @@ class UserController {
     });
     try {
       await user.save();
+      return res.status(200).json({ user });
     } catch (e) {
       if (e.code === 11000) {
         e.message = "This email exist";
       }
-      return res.status(401).json({ message: [e.message] });
+      return res
+        .status(401)
+        .json({ message: { message: e.message, type: "email" } });
     }
-    return res.status(200).json({ user });
   }
 
   async login(req, res) {
