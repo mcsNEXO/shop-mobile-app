@@ -9,6 +9,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Header from '../components/Header/Header';
 import NavPanel from '../screens/Home/components/NavPanel/NavPanel';
 import Register from '../screens/Auth/Register';
+import Login from '../screens/Auth/Login';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -56,12 +57,19 @@ const Navigator = () => {
           name={'Account'}
           component={Account}
           options={{
-            headerShown: false,
+            headerShown: true,
           }}
         />
         <Stack.Screen
           name={'Register'}
           component={Register}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'Login'}
+          component={Login}
           options={{
             headerShown: true,
           }}

@@ -12,16 +12,19 @@ class UserController {
       await user.save();
       return res.status(200).json({ user });
     } catch (e) {
+      let type = "";
       if (e.code === 11000) {
         e.message = "This email exist";
+        type = "email";
       }
       return res
         .status(401)
-        .json({ message: { message: e.message, type: "email" } });
+        .json({ message: { message: e.message, type: type } });
     }
   }
 
   async login(req, res) {
+    console.log(req);
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
