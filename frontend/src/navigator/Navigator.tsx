@@ -1,27 +1,71 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Home from '../screens/Home/Home';
-import NavPanel from '../screens/Home/components/NavPanel/NavPanel';
 import React from 'react';
+import Categories from '../screens/Home/components/Categories/Categories';
+import {NavigationContainer} from '@react-navigation/native';
+import TypeCategories from '../screens/Home/components/Categories/components/TypeCategories/TypeCategories';
+import Product from '../screens/Home/components/Categories/components/Product/Product';
+import Products from '../screens/Home/components/Categories/components/Products/Products';
+import Account from '../screens/Account/Account';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Header from '../components/Header/Header';
+import NavPanel from '../screens/Home/components/NavPanel/NavPanel';
+import Register from '../screens/Auth/Register';
 
 const Stack = createNativeStackNavigator();
-
 const Navigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        id="header"
-        screenOptions={{
-          header: () => (
-            <>
-              <Header />
-              <NavPanel />
-            </>
-          ),
-          headerShown: true,
-        }}>
-        <Stack.Screen name={'Home'} component={Home} />
+      <Stack.Navigator initialRouteName="Categories">
+        <Stack.Screen
+          options={{
+            header: () => (
+              <>
+                <Header toggleOpened={() => {}} />
+                <NavPanel />
+              </>
+            ),
+            headerShown: false,
+          }}
+          name={'Categories'}
+          component={Categories}
+        />
+        <Stack.Screen
+          name={'TypeCategories'}
+          component={TypeCategories}
+          options={({route}: any) => ({
+            title: route.params?.type,
+            headerShown: true,
+          })}
+        />
+        <Stack.Screen
+          name={'Products'}
+          component={Products}
+          options={({route}: any) => ({
+            title: route.params?.category,
+            headerShown: true,
+          })}
+        />
+        <Stack.Screen
+          name={'Product'}
+          component={Product}
+          options={({route}: any) => ({
+            title: route.params?.title,
+            headerShown: false,
+          })}
+        />
+        <Stack.Screen
+          name={'Account'}
+          component={Account}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name={'Register'}
+          component={Register}
+          options={{
+            headerShown: true,
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -2,7 +2,7 @@ const Shoes = require("../../db/models/shoes");
 class ProductController {
   async fetchProduct(req, res) {
     try {
-      const product = await Shoes.findOne({ _id: req.body.idProduct });
+      const product = await Shoes.findOne({ _id: req.body.productId });
       return res.status(200).json({ product });
     } catch (e) {
       return res.status(402).json({ message: "Cannot find this product" });
@@ -86,12 +86,12 @@ class ProductController {
           // type: req.body.type,
           $text: { $search: `"${req.body.text}"` },
         });
+        return res.status(200).json({ products });
       } else {
         return res
           .status(400)
           .json({ message: "Can't find this type of products!" });
       }
-      return res.status(200).json({ products });
     } catch (e) {
       return res.status(400).json({ message: e.message });
     }

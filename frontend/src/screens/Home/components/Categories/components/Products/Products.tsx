@@ -8,34 +8,45 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import axios from '../../../../../../axios';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
 import FilterModal from '../../../../../../components/Modals/FilterModal/FilterModal';
+import PrevButton from '../../../../../../components/Buttons/PrevButton';
 
 const Products = () => {
   const route: any = useRoute();
+  const navigation: any = useNavigation();
   const defaultValues = {
-    sortedBy: 'featured',
+    sortedBy: {
+      value: 'name',
+      sort: 1,
+    },
     price: '0',
     toPrice: '1000',
     colors: [],
     genders: [route?.params.gender.toLowerCase()],
+    sizes: [],
   };
 
   const [products, setProducts] = React.useState<any[]>();
   const [values, setValues] = React.useState<{
-    sortedBy: string;
+    sortedBy: {
+      value: string;
+      sort: number;
+      label?: string;
+    };
     price: string;
     toPrice: string;
     colors: string[];
     genders: any[];
+    sizes: number[];
   }>(defaultValues);
   const [openedFilterModal, setOpendFilterModal] =
     React.useState<boolean>(false);
   const handleOpenedFilterModal = (value: boolean) => {
-    return setOpendFilterModal(value);
+    setOpendFilterModal(!openedFilterModal);
   };
 
   const getData = async () => {
@@ -57,6 +68,17 @@ const Products = () => {
     getData();
   }, []);
 
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <PrevButton
+          openedFilterModal={openedFilterModal}
+          setOpenedFilterModal={setOpendFilterModal}
+        />
+      ),
+    });
+  }, [openedFilterModal]);
+
   const getStyles = (index: number, productsLength: number | undefined) => {
     if (productsLength === undefined) return;
     if (productsLength === 1) {
@@ -70,7 +92,6 @@ const Products = () => {
     }
     return styles.box;
   };
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -79,8 +100,23 @@ const Products = () => {
         keyExtractor={(_, index) => index.toString()}
         renderItem={({item, index}: {item: any; index: number}) => {
           return (
-            <View style={getStyles(index, products?.length)}>
-              <Image source={IMAGENAME.airforce.white} style={styles.image} />
+            <TouchableOpacity
+              style={getStyles(index, products?.length)}
+              onPress={() => {
+                navigation.navigate('Product', {
+                  title: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                  productId: item._id,
+                  color: item?.colors[item?.index],
+                });
+              }}>
+              <Image
+                source={
+                  IMAGENAME[item.name.replaceAll(' ', '')][
+                    item.colors[item.index]
+                  ]
+                }
+                style={styles.image}
+              />
               <View style={styles.desc}>
                 <Text style={styles.text}>{item.name}</Text>
                 <Text
@@ -90,18 +126,19 @@ const Products = () => {
                 <Text style={styles.textPrice}>{item.price}$</Text>
               </View>
               <View style={styles.moreColors}>
-                {item.colors.map((color: any) => (
-                  <TouchableOpacity
+                {item.colors.map((color: string, index: number) => (
+                  <View
+                    key={index}
                     style={[
                       styles.color,
                       {
                         backgroundColor: color,
                         borderColor: color === 'white' ? 'black' : color,
                       },
-                    ]}></TouchableOpacity>
+                    ]}></View>
                 ))}
               </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
       />
@@ -141,6 +178,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     borderWidth: 1,
     borderColor: 'white',
+    marginBottom: 10,
   },
   iconBox: {
     width: 50,
@@ -161,6 +199,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderWidth: 1,
     borderColor: 'white',
+    marginBottom: 10,
   },
   text: {
     fontSize: 16,

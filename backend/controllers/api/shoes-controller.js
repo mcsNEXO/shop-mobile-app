@@ -4,6 +4,8 @@ const Shoes = require("../../db/models/shoes");
 class ShoesController {
   async getShoes(req, res) {
     const url = req.body.url;
+    const obj = new Object();
+    obj[url.sort.value] = url.sort.sort;
     console.log("url", url);
     let shoes = await Shoes.find();
     if (url !== "") {
@@ -15,16 +17,16 @@ class ShoesController {
             type: 1,
             colors: url.colors
               ? {
-                  $setIntersection: ["$colors", url.colors?.split(",")],
+                  $setIntersection: ["$colors", url.colors],
                 }
               : 1,
             price: 1,
             image: 1,
-            size: url.size
+            size: url.sizes
               ? {
                   $setIntersection: [
                     "$size",
-                    url.size?.split(",")?.map((el) => parseInt(el)),
+                    url.sizes?.map((el) => parseInt(el)),
                   ],
                 }
               : 1,
@@ -54,13 +56,10 @@ class ShoesController {
           },
         },
         {
-          $sort: {
-            price: url.sort === "high-low" ? 1 : -1,
-          },
+          $sort: obj,
         },
       ]);
     }
-    console.log(shoes);
     return res.status(200).json({ shoes });
   }
 }
