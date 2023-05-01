@@ -10,6 +10,7 @@ import Header from '../components/Header/Header';
 import NavPanel from '../screens/Home/components/NavPanel/NavPanel';
 import Register from '../screens/Auth/Register';
 import Login from '../screens/Auth/Login';
+import ImageModal from '../screens/Account/components/Modals/ImageEditor';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -57,6 +58,14 @@ const Navigator = () => {
           name={'Account'}
           component={Account}
           options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'ImageEditor'}
+          component={ImageModal}
+          options={{
+            title: 'Confirm image',
             headerShown: true,
           }}
         />

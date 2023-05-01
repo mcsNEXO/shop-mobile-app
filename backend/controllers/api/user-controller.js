@@ -24,7 +24,6 @@ class UserController {
   }
 
   async login(req, res) {
-    console.log(req);
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
@@ -82,6 +81,7 @@ class UserController {
       res.status(402).json({ message: e.message });
     }
   }
+
   async saveImage(req, res) {
     const user = await User.findById(req.body._id);
     if (req.body?.userImage) {
@@ -93,6 +93,19 @@ class UserController {
     await user.save();
     return res.status(200).json({ user });
   }
+
+  async saveImageMobile(req, res) {
+    const user = await User.findById(req.body._id);
+    if (req.body?.avatar) {
+      if (req.body.avatar !== "avatar.png") {
+        fs.unlinkSync("../frontend/public/uploads/" + req.body.avatar);
+      }
+    }
+    user.image = req.file.filename;
+    await user.save();
+    return res.status(200).json({ user });
+  }
+
   async cancelUpload(req, res) {
     const user = await User.findById(req.body._id);
     if (user.image === req.body.pathImage.split("/")[2]) {

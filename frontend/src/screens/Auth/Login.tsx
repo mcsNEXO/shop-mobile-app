@@ -82,7 +82,6 @@ const Login = ({navigation}: LoginProps) => {
   );
 
   const login = async () => {
-    console.log('ta');
     const data = {
       email,
       password,
@@ -90,7 +89,7 @@ const Login = ({navigation}: LoginProps) => {
     try {
       const res = await axios.post('sign-in', data);
       setAuth(res.data.user);
-      console.log(res.data.user);
+      navigation.navigate('Account');
     } catch (err) {
       console.log(err);
     }
@@ -264,8 +263,8 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   error: {
-    color: 'red',
     marginTop: 2,
+    color: 'red',
     marginLeft: 'auto',
     marginRight: 'auto',
   },

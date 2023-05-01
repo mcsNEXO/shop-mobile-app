@@ -5,11 +5,12 @@ interface IContext {
 }
 
 type User = {
+  _id: any;
   email: string;
   password: string;
   firstName: string;
   lastName: string;
-  avatar: string;
+  image: string;
 };
 
 export const AuthContext = React.createContext<IContext>(null as any);

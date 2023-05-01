@@ -10,17 +10,42 @@ import {
 import {useAuthContext} from '../../context/AuthContext';
 import {AVATAR_IMAGE} from '../../assets/images/uploads/avatars';
 import React from 'react';
+import DocumentPicker from 'react-native-document-picker';
 
 const Account = () => {
   const {navigate}: any = useNavigation();
   const {user} = useAuthContext();
+  const [newImage, setNewImage] = React.useState(null);
+
+  const pickImageHandler = async () => {
+    try {
+      const result: any = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images],
+      });
+      navigate('ImageEditor', {file: result[0]});
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       {user ? (
         <View style={styles.container}>
           <Text style={styles.welcomeText}>Welcome on your profile!</Text>
-          <Image style={styles.image} source={AVATAR_IMAGE.defaultAvatar} />
-          <Text style={styles.firstName}>{user.firstName}</Text>
+          <TouchableOpacity style={styles.image} onPress={pickImageHandler}>
+            <Image
+              style={styles.image}
+              source={
+                user.image
+                  ? require('../../public/uploads/' + user.image)
+                  : AVATAR_IMAGE.defaultAvatar
+              }
+            />
+          </TouchableOpacity>
+          <Text style={styles.firstName}>
+            {user.firstName} {user.lastName}
+          </Text>
         </View>
       ) : (
         <View style={styles.container}>
@@ -75,18 +100,18 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    color: 'black',
     fontSize: 20,
     fontWeight: '600',
+    color: 'black',
   },
   desc: {
-    fontSize: 16,
     paddingLeft: 5,
+    fontSize: 16,
     color: 'black',
   },
   buttons: {
-    position: 'absolute',
     width: Dimensions.get('window').width,
+    position: 'absolute',
     bottom: 0,
   },
   button: {
@@ -117,7 +142,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     alignSelf: 'center',
-    marginTop: 12,
+    marginTop: 6,
   },
   firstName: {
     marginTop: 20,
