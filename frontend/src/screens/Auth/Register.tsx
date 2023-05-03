@@ -63,7 +63,11 @@ const Register = ({navigation}: LoginProps) => {
     //if error exist set state email error and clear general error
     setError(prevError => ({
       ...prevError,
-      email: validator.isEmail(val) ? '' : 'Please enter a valid email!',
+      email: validator.isEmail(val)
+        ? ''
+        : !validator.isLength(val, {min: 6, max: undefined})
+        ? 'Email must has min 6 characters'
+        : 'Please enter a valid email!',
       error: '',
     }));
   };

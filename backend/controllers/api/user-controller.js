@@ -45,6 +45,7 @@ class UserController {
     const user = await User.findById(req.body._id);
     user.email = req.body.email;
     user.firstName = req.body.firstName;
+    user.lastName = req.body.lastName;
     try {
       await user.save();
       return res.status(200).json({ user: user });

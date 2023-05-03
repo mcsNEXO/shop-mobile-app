@@ -38,7 +38,7 @@ const Account = () => {
               style={styles.image}
               source={
                 user.image
-                  ? require('../../public/uploads/' + user.image)
+                  ? AVATAR_IMAGE.defaultAvatar
                   : AVATAR_IMAGE.defaultAvatar
               }
             />
@@ -46,6 +46,11 @@ const Account = () => {
           <Text style={styles.firstName}>
             {user.firstName} {user.lastName}
           </Text>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() => navigate('EditProfile')}>
+            <Text style={styles.editText}>Edit profile data</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.container}>
@@ -150,5 +155,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  editBtn: {
+    width: Dimensions.get('window').width * 0.4,
+    alignItems: 'center',
+    marginTop: 18,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    padding: 3,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  editText: {
+    color: 'black',
   },
 });

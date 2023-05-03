@@ -11,6 +11,7 @@ import NavPanel from '../screens/Home/components/NavPanel/NavPanel';
 import Register from '../screens/Auth/Register';
 import Login from '../screens/Auth/Login';
 import ImageModal from '../screens/Account/components/Modals/ImageEditor';
+import EditProfile from '../screens/Account/components/EditProfile/EditProfile';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -80,6 +81,14 @@ const Navigator = () => {
           name={'Login'}
           component={Login}
           options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'EditProfile'}
+          component={EditProfile}
+          options={{
+            title: 'Edit profile',
             headerShown: true,
           }}
         />
