@@ -9,70 +9,107 @@ import {
 } from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import React from 'react';
-import {img} from './img';
+import {registerImage} from '../../assets/images/svg/img';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import validator from 'validator';
 import axios from '../../axios';
 
-const Register = () => {
+interface ErrorWithIndex extends Error {
+  [key: string]: string;
+}
+
+type Error = {
+  email: string;
+  password: string;
+  error: string;
+};
+
+type LoginProps = {
+  navigation: NavigationProp<ParamListBase>;
+};
+
+const Register = ({navigation}: LoginProps) => {
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
   const [firstName, setFirstName] = React.useState<string>('');
   const [lastName, setLastName] = React.useState<string>('');
   const [showPass, setShowPass] = React.useState(false);
-  const [activeInput, setActiveInput] = React.useState<string | null>(null);
-  const [error, setError] = React.useState<{
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    error: string;
-  }>({
+  const [focusedInput, setFocusedInput] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<ErrorWithIndex>({
     email: '',
     password: '',
     firstName: '',
     lastName: '',
     error: '',
   });
-  const navigation: any = useNavigation();
+  const getColor = React.useMemo(
+    () => (inputName: string) => {
+      //Setting the color depending on the state of the input
+      return error[inputName]
+        ? 'red'
+        : focusedInput === inputName
+        ? 'rgba(32, 32, 228, 0.900)'
+        : 'black';
+    },
+    [error, focusedInput],
+  );
 
-  const getTextColor = (inputName: string) => {
-    if (error[inputName]) {
-      return 'red';
-    }
-    return activeInput === inputName ? 'rgba(32, 32, 228, 0.900);' : 'black';
-  };
-  const handleEmail = (val: string) => {
+  const validateEmail = (val: string) => {
+    //save email state
     setEmail(val);
-    setError({...error, email: ''});
-    if (!validator.isEmail(val)) {
-      setError({...error, email: 'Please enter a valid email!'});
-    }
+
+    //if error exist set state email error and clear general error
+    setError(prevError => ({
+      ...prevError,
+      email: validator.isEmail(val)
+        ? ''
+        : !validator.isLength(val, {min: 6, max: undefined})
+        ? 'Email must has min 6 characters'
+        : 'Please enter a valid email!',
+      error: '',
+    }));
   };
-  const handlePassword = (val: string) => {
+
+  const validatePassword = (val: string) => {
+    //save password state
     setPassword(val);
-    setError({...error, password: ''});
-    if (validator.isEmpty(val)) {
-      setError({...error, password: 'Password is empty!'});
-    } else if (!validator.isLength(val, {min: 6, max: undefined})) {
-      setError({...error, password: 'Password must has min 6 characters!'});
-    }
+
+    //if error exist set state password error and clear general error
+    setError(prevError => ({
+      ...prevError,
+      password: validator.isEmpty(val)
+        ? 'Password cannot be empty!'
+        : !validator.isLength(val, {min: 6, max: undefined})
+        ? 'Password must has min 6 characters'
+        : '',
+      error: '',
+    }));
   };
 
-  const handleFirstName = (val: string) => {
+  const validateFirstName = (val: string) => {
+    //save firstName state
     setFirstName(val);
-    if (validator.isEmpty(val)) {
-      setError({...error, firstName: 'First name is empty!'});
-    }
+
+    //if error exist set state firstName error and clear general error
+    setError(prevError => ({
+      ...prevError,
+      firstName: validator.isEmpty(val) ? 'First name is empty!' : '',
+      error: '',
+    }));
   };
 
-  const handleLastName = (val: string) => {
+  const validateLastName = (val: string) => {
+    //save lastName state
     setLastName(val);
-    if (validator.isEmpty(val)) {
-      setError({...error, lastName: 'Last name is empty!'});
-    }
+
+    //if error exist set state lastName error and clear general error
+    setError(prevError => ({
+      ...prevError,
+      lastName: validator.isEmpty(val) ? 'Last name is empty!' : '',
+      error: '',
+    }));
   };
 
   const register = async () => {
@@ -98,7 +135,7 @@ const Register = () => {
       <ScrollView>
         <View style={styles.image}>
           <SvgXml
-            xml={img}
+            xml={registerImage}
             width={Dimensions.get('window').width * 0.85}
             height={Dimensions.get('window').height * 0.4}
           />
@@ -107,32 +144,29 @@ const Register = () => {
         <Text style={styles.underTitle}>Create new account</Text>
         {error.error && <Text style={styles.error}>{error.error}</Text>}
         <View
-          style={[
-            styles.containerPassword,
-            {borderColor: getTextColor('email')},
-          ]}>
+          style={[styles.containerPassword, {borderColor: getColor('email')}]}>
           <MaterialIcon
             name={'mail-outline'}
             size={20}
-            color={getTextColor('email')}
+            color={getColor('email')}
           />
           <TextInput
             style={[
               styles.passwordInput,
               {
-                color: getTextColor('email'),
+                color: getColor('email'),
               },
             ]}
             value={email}
             placeholder="Email"
             keyboardType="email-address"
-            onChangeText={val => handleEmail(val)}
+            onChangeText={val => validateEmail(val)}
             autoCapitalize="none"
             onFocus={() => {
-              setActiveInput('email');
+              setFocusedInput('email');
             }}
             onBlur={() => {
-              setActiveInput(null);
+              setFocusedInput(null);
             }}
           />
         </View>
@@ -141,29 +175,29 @@ const Register = () => {
           style={[
             styles.containerPassword,
             {
-              borderColor: getTextColor('password'),
+              borderColor: getColor('password'),
             },
           ]}>
           <IoniconsIcon
             name={'lock-closed-outline'}
             size={20}
-            color={getTextColor('password')}
+            color={getColor('password')}
             onPress={() => setShowPass(!showPass)}
           />
           <TextInput
             style={[
               styles.passwordInput,
-              {width: '70%', color: getTextColor('password')},
+              {width: '70%', color: getColor('password')},
             ]}
             value={password}
             secureTextEntry={!showPass}
             placeholder="Password"
-            onChangeText={val => handlePassword(val)}
+            onChangeText={val => validatePassword(val)}
             onFocus={() => {
-              setActiveInput('password');
+              setFocusedInput('password');
             }}
             onBlur={() => {
-              setActiveInput(null);
+              setFocusedInput(null);
             }}
           />
           <IoniconsIcon
@@ -177,23 +211,23 @@ const Register = () => {
         <View
           style={[
             styles.containerPassword,
-            {borderColor: getTextColor('firstName')},
+            {borderColor: getColor('firstName')},
           ]}>
           <MaterialIcon
             name={'person-outline'}
             size={20}
-            color={getTextColor('firstName')}
+            color={getColor('firstName')}
           />
           <TextInput
-            style={[styles.passwordInput, {color: getTextColor('firstName')}]}
+            style={[styles.passwordInput, {color: getColor('firstName')}]}
             value={firstName}
             placeholder="First Name"
-            onChangeText={val => handleFirstName(val)}
+            onChangeText={val => validateFirstName(val)}
             onFocus={() => {
-              setActiveInput('firstName');
+              setFocusedInput('firstName');
             }}
             onBlur={() => {
-              setActiveInput(null);
+              setFocusedInput(null);
             }}
           />
         </View>
@@ -201,23 +235,23 @@ const Register = () => {
         <View
           style={[
             styles.containerPassword,
-            {borderColor: getTextColor('lastName')},
+            {borderColor: getColor('lastName')},
           ]}>
           <IoniconsIcon
             name={'person-circle-outline'}
             size={20}
-            color={getTextColor('lastName')}
+            color={getColor('lastName')}
           />
           <TextInput
-            style={[styles.passwordInput, {color: getTextColor('lastName')}]}
+            style={[styles.passwordInput, {color: getColor('lastName')}]}
             value={lastName}
             placeholder="Last Name"
-            onChangeText={val => handleLastName(val)}
+            onChangeText={val => validateLastName(val)}
             onFocus={() => {
-              setActiveInput('lastName');
+              setFocusedInput('lastName');
             }}
             onBlur={() => {
-              setActiveInput(null);
+              setFocusedInput(null);
             }}
           />
         </View>
@@ -225,7 +259,16 @@ const Register = () => {
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.text}>You have account? Sign in</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btn} onPress={register}>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={register}
+          disabled={
+            Object.values(error).some(x => x !== '') ||
+            !email ||
+            !password ||
+            !firstName ||
+            !lastName
+          }>
           <Text style={styles.btnText}>Sign up!</Text>
         </TouchableOpacity>
       </ScrollView>

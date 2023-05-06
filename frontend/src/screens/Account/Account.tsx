@@ -5,49 +5,95 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Image,
 } from 'react-native';
+import {useAuthContext} from '../../context/AuthContext';
+import {AVATAR_IMAGE} from '../../assets/images/uploads/avatars';
+import React from 'react';
+import DocumentPicker from 'react-native-document-picker';
 
 const Account = () => {
   const {navigate}: any = useNavigation();
+  const {user} = useAuthContext();
+  const [newImage, setNewImage] = React.useState(null);
+
+  const pickImageHandler = async () => {
+    try {
+      const result: any = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images],
+      });
+      navigate('ImageEditor', {file: result[0]});
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
-      <View style={styles.container}>
-        <Text style={styles.title}>WHAT BENEFITS ?</Text>
-        <Text style={styles.desc}>
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.""Lorem ipsum
-          dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-          incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-          commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-          velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-          occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-          mollit anim id est laborum.""Lorem ipsum dolor sit amet, consectetur
-          adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-          irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-          fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-          sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </Text>
-      </View>
-      <View style={styles.buttons}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigate('Register')}>
-          <Text style={styles.text}>Register</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigate('Login')}>
-          <Text style={styles.text}>Log in</Text>
-        </TouchableOpacity>
-      </View>
+      {user ? (
+        <View style={styles.container}>
+          <Text style={styles.welcomeText}>Welcome on your profile!</Text>
+          <TouchableOpacity style={styles.image} onPress={pickImageHandler}>
+            <Image
+              style={styles.image}
+              source={
+                user.image
+                  ? AVATAR_IMAGE.defaultAvatar
+                  : AVATAR_IMAGE.defaultAvatar
+              }
+            />
+          </TouchableOpacity>
+          <Text style={styles.firstName}>
+            {user.firstName} {user.lastName}
+          </Text>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() => navigate('EditProfile')}>
+            <Text style={styles.editText}>Edit profile data</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <View>
+            <Text style={styles.title}>WHAT BENEFITS ?</Text>
+            <Text style={styles.desc}>
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+              reprehenderit in voluptate velit esse cillum dolore eu fugiat
+              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+              sunt in culpa qui officia deserunt mollit anim id est
+              laborum.""Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+              reprehenderit in voluptate velit esse cillum dolore eu fugiat
+              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+              sunt in culpa qui officia deserunt mollit anim id est
+              laborum.""Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+              reprehenderit in voluptate velit esse cillum dolore eu fugiat
+              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+              sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </Text>
+          </View>
+          <View style={styles.buttons}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigate('Register')}>
+              <Text style={styles.text}>Register</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigate('Login')}>
+              <Text style={styles.text}>Log in</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </>
   );
 };
@@ -59,18 +105,18 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    color: 'black',
     fontSize: 20,
     fontWeight: '600',
+    color: 'black',
   },
   desc: {
-    fontSize: 16,
     paddingLeft: 5,
+    fontSize: 16,
     color: 'black',
   },
   buttons: {
-    position: 'absolute',
     width: Dimensions.get('window').width,
+    position: 'absolute',
     bottom: 0,
   },
   button: {
@@ -90,5 +136,37 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 18,
+  },
+  welcomeText: {
+    fontSize: 25,
+    color: 'black',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  image: {
+    width: 120,
+    height: 120,
+    alignSelf: 'center',
+    marginTop: 6,
+  },
+  firstName: {
+    marginTop: 20,
+    color: 'black',
+    fontSize: 18,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  editBtn: {
+    width: Dimensions.get('window').width * 0.4,
+    alignItems: 'center',
+    marginTop: 18,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    padding: 3,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  editText: {
+    color: 'black',
   },
 });
