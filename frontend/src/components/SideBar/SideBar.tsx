@@ -6,19 +6,16 @@ import {
   Dimensions,
   Animated,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
-import {hambugerData} from '../../../../hamburgerData';
+import {hambugerData} from '../../hamburgerData';
+import {useHamburgerContext} from '../../context/HamburgerContext';
 
-export default function SideBar({
-  opened,
-  setOpened,
-}: {
-  opened: boolean;
-  setOpened: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  const {navigate}: any = useNavigation();
+export default function SideBar() {
+  const {isOpenHamburger, setIsOpenHamburger} = useHamburgerContext();
+  const navigation: any = useNavigation();
+  const route = useRoute();
   const width = Dimensions.get('window').width * 0.65;
   const [index, setIndex] = React.useState(0);
 
@@ -30,11 +27,10 @@ export default function SideBar({
   );
 
   const closeDrawer = () => {
-    setOpened(false);
+    setIsOpenHamburger(false);
   };
-
   React.useEffect(() => {
-    if (opened) {
+    if (isOpenHamburger) {
       setIndex(1);
       Animated.parallel([
         Animated.timing(animatedWidth, {
@@ -61,11 +57,11 @@ export default function SideBar({
           useNativeDriver: false,
         }),
       ]).start(() => {
-        setOpened(false);
+        setIsOpenHamburger(false);
         setIndex(0);
       });
     }
-  }, [opened]);
+  }, [isOpenHamburger]);
 
   return (
     <>
@@ -79,13 +75,20 @@ export default function SideBar({
           {width: animatedWidth ? animatedWidth : width},
         ]}>
         <View style={styles.hamburger}>
-          <TouchableOpacity onPress={() => setOpened(false)}>
+          <TouchableOpacity onPress={() => setIsOpenHamburger(false)}>
             <Icon name="arrow-back" size={23} color={'black'} />
           </TouchableOpacity>
           {hambugerData.map((item, index) => (
             <TouchableOpacity
-              onPress={() => navigate(`${item.name}`)}
-              style={[styles.option, index === 0 && styles.optionFirstChild]}
+              onPress={() => {
+                setIsOpenHamburger(false);
+                navigation.navigate(`${item.name}`);
+              }}
+              style={[
+                styles.option,
+                index === 0 && styles.optionFirstChild,
+                item.name === route.name && {backgroundColor: '#d8d8d8ce'},
+              ]}
               key={index}>
               <Icon name={item.icon} size={28} color={'black'} />
               <Text style={styles.text}>{item.name}</Text>

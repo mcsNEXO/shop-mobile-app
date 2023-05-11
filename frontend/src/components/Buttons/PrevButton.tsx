@@ -10,7 +10,6 @@ interface IPrevButton {
 const PrevButton = ({openedFilterModal, setOpenedFilterModal}: IPrevButton) => {
   const navigation = useNavigation();
   const route = useRoute();
-  console.log('routing',route)
   return (
     <TouchableOpacity
       onPress={() => {

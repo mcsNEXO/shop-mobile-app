@@ -50,7 +50,14 @@ class UserController {
       await user.save();
       return res.status(200).json({ user: user });
     } catch (e) {
-      return res.status(402).json({ message: [e.message] });
+      let type = "";
+      if (e.code === 11000) {
+        e.message = "This email exist";
+        type = "email";
+      }
+      return res
+        .status(402)
+        .json({ message: { message: e.message, type: type } });
     }
   }
 

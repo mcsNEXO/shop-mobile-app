@@ -3,7 +3,7 @@ import useCategory from '../../../../hooks/useCategory';
 import React from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {categoryData} from '../../../../data';
-import SideBar from '../SideBar/SideBar';
+import SideBar from '../../../../components/SideBar/SideBar';
 import Header from '../../../../components/Header/Header';
 import NavPanel from '../NavPanel/NavPanel';
 
@@ -17,9 +17,9 @@ const Categories = () => {
 
   return (
     <>
-      <SideBar opened={opened} setOpened={setOpened} />
+      <SideBar />
       <View style={styles.header}>
-        <Header toggleOpened={() => setOpened(true)} />
+        <Header />
         <NavPanel />
       </View>
       <FlatList
