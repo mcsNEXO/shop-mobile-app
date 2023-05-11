@@ -1,34 +1,28 @@
 import React from 'react';
-import Categories from '../screens/Home/components/Categories/Categories';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
+import Categories from '../screens/Home/components/Categories/Categories';
 import TypeCategories from '../screens/Home/components/Categories/components/TypeCategories/TypeCategories';
 import Product from '../screens/Home/components/Categories/components/Product/Product';
 import Products from '../screens/Home/components/Categories/components/Products/Products';
 import Account from '../screens/Account/Account';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Header from '../components/Header/Header';
-import NavPanel from '../screens/Home/components/NavPanel/NavPanel';
 import Register from '../screens/Auth/Register';
 import Login from '../screens/Auth/Login';
-import ImageModal from '../screens/Account/components/Modals/ImageEditor';
+import Cart from '../screens/Cart/Cart';
+import Settings from '../screens/Settings/Settings';
 import EditProfile from '../screens/Account/components/EditProfile/EditProfile';
+import ImageModal from '../screens/Account/components/Modals/ImageEditor';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Categories">
+      <Stack.Navigator initialRouteName="Search">
         <Stack.Screen
           options={{
-            header: () => (
-              <>
-                <Header toggleOpened={() => {}} />
-                <NavPanel />
-              </>
-            ),
             headerShown: false,
           }}
-          name={'Categories'}
+          name={'Search'}
           component={Categories}
         />
         <Stack.Screen
@@ -90,6 +84,22 @@ const Navigator = () => {
           options={{
             title: 'Edit profile',
             headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'Cart'}
+          component={Cart}
+          options={{
+            title: 'Cart',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name={'Settings'}
+          component={Settings}
+          options={{
+            title: 'Settings',
+            headerShown: false,
           }}
         />
       </Stack.Navigator>

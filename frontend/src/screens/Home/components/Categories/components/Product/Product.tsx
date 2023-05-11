@@ -13,10 +13,13 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SizeModal from './SizeModal';
+import {useCartContext} from '../../../../../../context/CartContext';
+import useCartHook from '../../../../../../hooks/useCart';
 
 const Product = () => {
   const route: any = useRoute();
   const navigation: any = useNavigation();
+  const {setCart} = useCartHook();
   const [product, setProduct] = React.useState<any>(null);
   const [openedSizeModal, setOpenedSizeModal] = React.useState<boolean>(false);
   const [size, setSize] = React.useState<number | null>(null);
@@ -47,7 +50,7 @@ const Product = () => {
       console.log(err);
     }
   };
-  console.log(route)
+
   return (
     <>
       <ScrollView style={styles.container}>
@@ -60,7 +63,7 @@ const Product = () => {
             }
             style={styles.image}
           />
-        )} 
+        )}
         <ScrollView style={styles.imagesContainer} horizontal>
           {product?.colors.map((color: string, index: number) => {
             return (
@@ -99,7 +102,11 @@ const Product = () => {
               {size ? `Selected size: ${size}` : 'Select size'}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, {backgroundColor: 'black'}]}>
+          <TouchableOpacity
+            style={[styles.button, {backgroundColor: 'black'}]}
+            onPress={() =>
+              setCart({...product, colors: route.params.color, size: size})
+            }>
             <Text style={styles.cartBtn}>Add to cart</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button}>

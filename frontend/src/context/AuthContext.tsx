@@ -1,7 +1,13 @@
 import React from 'react';
+import {getAsyncStorage, setAsyncStorage} from '../helpers/asyncStorage';
+import {useCartContext} from './CartContext';
+import axios from '../axios';
+import useCartHook from '../hooks/useCart';
+
 interface IContext {
   user: User | null;
   setAuth: React.Dispatch<React.SetStateAction<User | null>>;
+  setAuthStorage: (user: User) => void;
 }
 
 type User = {
@@ -19,10 +25,34 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
   children,
 }) => {
   const [user, setAuth] = React.useState<User | null>(null);
+  const {setCartStorage} = useCartContext();
+
+  React.useEffect(() => {
+    (async () => {
+      const data: any = await getAsyncStorage('auth');
+      if (!data) return;
+      try {
+        setAuth(JSON.parse(data));
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, []);
+
+  const setAuthStorage = async (user: User) => {
+    setAuth(user);
+    setAsyncStorage('auth', user);
+    const data2 = {
+      userId: user?._id,
+    };
+    const res = await axios.post('get-product', data2);
+    setCartStorage(res.data.cart);
+  };
 
   const value = {
     user,
     setAuth,
+    setAuthStorage,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

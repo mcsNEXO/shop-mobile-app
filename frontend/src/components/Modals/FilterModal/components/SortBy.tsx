@@ -56,7 +56,6 @@ const SortBy = ({sortedBy, setSortedBy, style}: ISortBy) => {
       };
       setSortedBy(obj);
     }
-    console.log(value, sort);
   };
   return (
     <View style={style}>

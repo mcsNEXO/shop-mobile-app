@@ -50,7 +50,6 @@ const Products = () => {
   };
 
   const getData = async () => {
-    console.log('s');
     try {
       const data = {
         type: route.params.type.toLowerCase(),

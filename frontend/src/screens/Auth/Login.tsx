@@ -16,6 +16,7 @@ import validator from 'validator';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import axios from '../../axios';
 import {useAuthContext} from '../../context/AuthContext';
+import {useCartContext} from '../../context/CartContext';
 
 interface ErrorWithIndex extends Error {
   [key: string]: string;
@@ -32,6 +33,10 @@ type LoginProps = {
 };
 
 const Login = ({navigation}: LoginProps) => {
+  //contexts
+  const {setAuthStorage} = useAuthContext();
+  const {cart, setCartStorage} = useCartContext();
+
   //states
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
@@ -42,7 +47,6 @@ const Login = ({navigation}: LoginProps) => {
     password: '',
     error: '',
   });
-  const {user, setAuth} = useAuthContext();
 
   //functions
   const validateEmail = (val: string) => {
@@ -86,9 +90,19 @@ const Login = ({navigation}: LoginProps) => {
       email,
       password,
     };
+    const localCart = cart;
     try {
       const res = await axios.post('sign-in', data);
-      setAuth(res.data.user);
+      setAuthStorage(res.data.user);
+      if (localCart) {
+        const data2 = {
+          cart: localCart,
+          userId: res.data.user._id,
+          type: 'cart',
+        };
+        const res2 = await axios.post('/add-product', data2);
+        setCartStorage(res2.data.cart);
+      }
       navigation.navigate('Account');
     } catch (err) {
       console.log(err);
@@ -104,7 +118,6 @@ const Login = ({navigation}: LoginProps) => {
               xml={loginImage}
               width={Dimensions.get('window').width * 0.85}
               height={Dimensions.get('window').height * 0.4}
-              onPress={() => console.log(user)}
             />
           </View>
           <Text style={styles.title}>Sign in</Text>

@@ -126,8 +126,12 @@ const EditProfile = ({navigation}: NavigationType) => {
     };
     try {
       const res = await axios.put('edit-data', data);
-    } catch (e) {
-      console.log(e);
+    } catch (err: any) {
+      const errMessage = err?.response?.data?.message?.message;
+      if (err?.response?.data?.message?.type === 'email') {
+        return setError({...error, email: errMessage});
+      }
+      return setError({...error, error: errMessage});
     }
   };
 

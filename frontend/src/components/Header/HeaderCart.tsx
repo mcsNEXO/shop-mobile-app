@@ -3,22 +3,26 @@ import {StyleSheet, Text, View, DrawerLayoutAndroid} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useHamburgerContext} from '../../context/HamburgerContext';
 
-const Header = () => {
+const HeaderCart = () => {
   const {isOpenHamburger, setIsOpenHamburger} = useHamburgerContext();
   return (
     <View style={styles.header}>
-      <Icon
-        name="menu"
-        size={20}
-        color={'black'}
-        style={styles.hamburger}
-        onPress={() => setIsOpenHamburger(!isOpenHamburger)}
-      />
-      <Text style={styles.title}>Shop</Text>
+      <View style={styles.row}>
+        <Icon
+          name="menu"
+          size={24}
+          color={'black'}
+          style={styles.hamburger}
+          onPress={() => setIsOpenHamburger(!isOpenHamburger)}
+        />
+        <Text style={styles.title}>Cart</Text>
+      </View>
       <Icon name="search" size={20} color={'black'} style={styles.search} />
     </View>
   );
 };
+
+export default HeaderCart;
 
 const styles = StyleSheet.create({
   header: {
@@ -26,9 +30,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.3,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   title: {
-    fontSize: 18,
+    fontSize: 21,
+    color: 'black',
+    marginLeft: 10,
   },
   hamburger: {
     marginLeft: 4,
@@ -37,5 +49,3 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
 });
-
-export default Header;
