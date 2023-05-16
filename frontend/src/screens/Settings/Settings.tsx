@@ -1,9 +1,13 @@
 import {View, Text, TouchableOpacity} from 'react-native';
 import {useAuthContext} from '../../context/AuthContext';
-import {useNavigation} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from '@react-navigation/native';
 
 const Settings = () => {
-  const navigation: any = useNavigation();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
   const {user, setAuth} = useAuthContext();
 
   const logout = () => {

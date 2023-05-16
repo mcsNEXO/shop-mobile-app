@@ -1,13 +1,18 @@
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import useCategory from '../../../../../../hooks/useCategory';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {categoryData} from '../../../../../../data';
 
-const TypeCategories = (props: any) => {
+const TypeCategories = () => {
   //hooks
   const {category} = useCategory();
   const route: any = useRoute();
-  const {navigate}: any = useNavigation();
+  const {navigate}: NavigationProp<ParamListBase> = useNavigation();
 
   //variables
   const type = route.params?.type;

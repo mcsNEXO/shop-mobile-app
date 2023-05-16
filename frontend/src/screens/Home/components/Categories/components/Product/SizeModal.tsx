@@ -5,42 +5,46 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Modal,
 } from 'react-native';
-import {shoesSize} from '../../../../../../filterData';
+import {sizesGenders} from '../../../../../../filterData';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface ISizeModal {
   gender: string;
   type: string;
+  isOpen: boolean;
   closeModal: () => void;
   setSize: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-const SizeModal = ({gender, type, closeModal, setSize}: ISizeModal) => {
+const SizeModal = ({gender, type, closeModal, setSize, isOpen}: ISizeModal) => {
   const handleSize = (size: number) => {
     setSize(size);
     closeModal();
   };
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.sizes}>Sizes</Text>
-        <TouchableOpacity onPress={closeModal}>
-          <Icon name="cancel" size={35} color="black" />
-        </TouchableOpacity>
-      </View>
-      {shoesSize[gender]?.map((size: number, index: number) => {
-        return (
-          <TouchableOpacity
-            style={styles.button}
-            key={index}
-            onPress={() => handleSize(size)}>
-            <Text style={styles.text}>{size}</Text>
+    <Modal visible={isOpen} animationType="fade">
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.sizes}>Sizes</Text>
+          <TouchableOpacity onPress={closeModal}>
+            <Icon name="cancel" size={35} color="black" />
           </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
+        </View>
+        {sizesGenders[gender]?.map((size: number, index: number) => {
+          return (
+            <TouchableOpacity
+              style={styles.button}
+              key={index}
+              onPress={() => handleSize(size)}>
+              <Text style={styles.text}>{size}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </Modal>
   );
 };
 

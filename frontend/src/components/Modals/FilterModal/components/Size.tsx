@@ -16,7 +16,7 @@ interface ISize {
 
 const Size = ({style, sizes, sizesHandler}: ISize) => {
   const {category} = useCategory();
-  const arrOfSizes = (sizesGenders as any)[category.toLowerCase()];
+  const arrOfSizes = sizesGenders[category.toLowerCase()];
   return (
     <View style={[styles.container]}>
       <Text style={styles.title}>Select size</Text>
