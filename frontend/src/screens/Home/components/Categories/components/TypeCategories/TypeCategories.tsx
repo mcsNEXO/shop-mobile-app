@@ -1,13 +1,18 @@
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import useCategory from '../../../../../../hooks/useCategory';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {categoryData} from '../../../../../../data';
 
-const TypeCategories = (props: any) => {
+const TypeCategories = () => {
   //hooks
   const {category} = useCategory();
   const route: any = useRoute();
-  const {navigate}: any = useNavigation();
+  const {navigate}: NavigationProp<ParamListBase> = useNavigation();
 
   //variables
   const type = route.params?.type;
@@ -31,7 +36,7 @@ const TypeCategories = (props: any) => {
                   category: item.name,
                 })
               }>
-              <Text>{item.name}</Text>
+              <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -52,10 +57,14 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 50,
     justifyContent: 'center',
+    borderColor: 'black',
     shadowColor: 'black',
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
     backgroundColor: 'white',
+  },
+  text: {
+    color: 'black',
   },
 });

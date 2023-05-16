@@ -1,31 +1,47 @@
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import useCategory from '../../../../hooks/useCategory';
-import {useNavigation} from '@react-navigation/native';
+import React from 'react';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {categoryData} from '../../../../data';
+import SideBar from '../../../../components/SideBar/SideBar';
+import Header from '../../../../components/Headers/Header';
+import NavPanel from '../NavPanel/NavPanel';
 
 const Categories = () => {
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
   const {category} = useCategory();
-  const navigation: any = useNavigation();
   const type = categoryData?.categoryList?.find(
     e => e?.name === category,
   )?.children;
+  const [opened, setOpened] = React.useState<boolean>(false);
 
   return (
-    <FlatList
-      data={type}
-      renderItem={({item, index}) => (
-        <View style={styles.container} key={index}>
-          <TouchableOpacity
-            style={styles.category}
-            onPress={() => {
-              navigation.getParent('header').setOptions({headerShown: false}),
+    <>
+      <SideBar />
+      <View style={styles.header}>
+        <Header />
+        <NavPanel />
+      </View>
+      <FlatList
+        data={type}
+        renderItem={({item, index}) => (
+          <View style={styles.container} key={index}>
+            <TouchableOpacity
+              style={styles.category}
+              onPress={() => {
                 navigation.navigate('TypeCategories', {type: item.name});
-            }}>
-            <Text>{item?.name}</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    />
+              }}>
+              <Text style={styles.text}>{item?.name}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+    </>
   );
 };
 
@@ -35,15 +51,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
+  header: {
+    height: 'auto',
+  },
   category: {
     width: '80%',
     height: 50,
     justifyContent: 'center',
     shadowColor: 'black',
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderRadius: 5,
+    borderColor: 'black',
     padding: 10,
     backgroundColor: 'white',
+  },
+  text: {
+    color: 'black',
+  },
+  option: {
+    width: '100%',
+    height: 44,
+    justifyContent: 'center',
+    alignContent: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
+  },
+  textOption: {
+    fontSize: 16,
+    color: 'black',
   },
 });
 

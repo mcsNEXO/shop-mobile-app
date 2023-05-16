@@ -1,6 +1,6 @@
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import React from 'react';
-import {colorsData} from '../../../../data';
+import {colorsData} from '../../../../filterData';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface IColors {
@@ -11,14 +11,14 @@ interface IColors {
 
 const Colors = ({colorsHandler, colors, style}: IColors) => {
   return (
-    <View style={style}>
+    <View style={[style]}>
       <Text style={styles.title}>Filter by colors</Text>
       <View style={styles.colorContainer}>
         {colorsData?.map(color => (
           <View
             key={color}
             style={{
-              width: '25%',
+              width: '20%',
               flexDirection: 'row',
               justifyContent: 'flex-start',
             }}>
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   colorContainer: {
-    width: 280,
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginLeft: 10,

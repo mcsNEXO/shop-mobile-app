@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 interface ICheckBox {
   value: boolean;
   label: string;
-  setIsChecked: any;
+  setIsChecked: () => void;
 }
 
 const Checkbox = ({value, label, setIsChecked}: ICheckBox) => {

@@ -1,3 +1,4 @@
-const mongoose = require('mongoose')
-const {database} = require('../config')
-mongoose.connect(database)
+const mongoose = require("mongoose");
+const { database } = require("../config");
+mongoose.set("strictQuery", true);
+mongoose.connect(database);

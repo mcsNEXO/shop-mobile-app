@@ -2,7 +2,7 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import React from 'react';
 
-const Header = ({closeModal}: any) => (
+const Header = ({closeModal}: {closeModal: () => void}) => (
   <View style={styles.header}>
     <Text style={styles.headerText}>Sort and filter</Text>
     <TouchableOpacity onPress={closeModal}>

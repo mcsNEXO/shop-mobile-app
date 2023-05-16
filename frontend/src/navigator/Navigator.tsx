@@ -1,27 +1,116 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Home from '../screens/Home/Home';
-import NavPanel from '../screens/Home/components/NavPanel/NavPanel';
 import React from 'react';
-import Header from '../components/Header/Header';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+import Categories from '../screens/Home/components/Categories/Categories';
+import TypeCategories from '../screens/Home/components/Categories/components/TypeCategories/TypeCategories';
+import Product from '../screens/Home/components/Categories/components/Product/Product';
+import Products from '../screens/Home/components/Categories/components/Products/Products';
+import Account from '../screens/Account/Account';
+import Register from '../screens/Auth/Register';
+import Login from '../screens/Auth/Login';
+import Cart from '../screens/Cart/Cart';
+import Settings from '../screens/Settings/Settings';
+import EditProfile from '../screens/Account/components/EditProfile/EditProfile';
+import ImageModal from '../screens/Account/components/Modals/ImageEditor';
+import Favorite from '../screens/Favorite/Favorite';
 
 const Stack = createNativeStackNavigator();
-
 const Navigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        id="header"
-        screenOptions={{
-          header: () => (
-            <>
-              <Header />
-              <NavPanel />
-            </>
-          ),
-          headerShown: true,
-        }}>
-        <Stack.Screen name={'Home'} component={Home} />
+      <Stack.Navigator initialRouteName="Search">
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+          name={'Search'}
+          component={Categories}
+        />
+        <Stack.Screen
+          name={'TypeCategories'}
+          component={TypeCategories}
+          options={({route}: any) => ({
+            title: route.params?.type,
+            headerShown: true,
+          })}
+        />
+        <Stack.Screen
+          name={'Products'}
+          component={Products}
+          options={({route}: any) => ({
+            title: route.params?.category,
+            headerShown: true,
+          })}
+        />
+        <Stack.Screen
+          name={'Product'}
+          component={Product}
+          options={({route}: any) => ({
+            title: route.params?.title,
+            headerShown: true,
+          })}
+        />
+        <Stack.Screen
+          name={'Account'}
+          component={Account}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'ImageEditor'}
+          component={ImageModal}
+          options={{
+            title: 'Confirm image',
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'Register'}
+          component={Register}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'Login'}
+          component={Login}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'EditProfile'}
+          component={EditProfile}
+          options={{
+            title: 'Edit profile',
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name={'Cart'}
+          component={Cart}
+          options={{
+            title: 'Cart',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name={'Favorite'}
+          component={Favorite}
+          options={{
+            title: 'Favorite',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name={'Settings'}
+          component={Settings}
+          options={{
+            title: 'Settings',
+            headerShown: false,
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

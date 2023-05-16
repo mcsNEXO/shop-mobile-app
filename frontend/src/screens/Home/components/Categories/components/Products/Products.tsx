@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   View,
   Text,
@@ -8,38 +9,50 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import axios from '../../../../../../axios';
-import {useRoute} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
 import FilterModal from '../../../../../../components/Modals/FilterModal/FilterModal';
+import {
+  DefaultFilterValues,
+  OrdinaryProduct,
+} from '../../../../../../helpers/typesProducts';
 
 const Products = () => {
   const route: any = useRoute();
   const defaultValues = {
-    sortedBy: 'featured',
+    sortedBy: {
+      value: 'name',
+      sort: 1,
+    },
     price: '0',
     toPrice: '1000',
     colors: [],
     genders: [route?.params.gender.toLowerCase()],
+    sizes: [],
   };
-
-  const [products, setProducts] = React.useState<any[]>();
-  const [values, setValues] = React.useState<{
-    sortedBy: string;
-    price: string;
-    toPrice: string;
-    colors: string[];
-    genders: any[];
-  }>(defaultValues);
+  //states
   const [openedFilterModal, setOpendFilterModal] =
     React.useState<boolean>(false);
-  const handleOpenedFilterModal = (value: boolean) => {
-    return setOpendFilterModal(value);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [products, setProducts] = React.useState<OrdinaryProduct[]>();
+  const [values, setValues] =
+    React.useState<DefaultFilterValues>(defaultValues);
+
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
+
+  const handleOpenedFilterModal = () => {
+    setOpendFilterModal(!openedFilterModal);
   };
 
   const getData = async () => {
-    console.log('s');
+    setLoading(true);
     try {
       const data = {
         type: route.params.type.toLowerCase(),
@@ -50,6 +63,8 @@ const Products = () => {
       return setProducts(res.data.products);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,17 +85,33 @@ const Products = () => {
     }
     return styles.box;
   };
-
-  return (
+  return loading ? (
+    <ActivityIndicator size={'large'} />
+  ) : (
     <View style={styles.container}>
       <FlatList
         numColumns={2}
         data={products}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({item, index}: {item: any; index: number}) => {
+        renderItem={({item, index}) => {
           return (
-            <View style={getStyles(index, products?.length)}>
-              <Image source={IMAGENAME.airforce.white} style={styles.image} />
+            <TouchableOpacity
+              style={getStyles(index, products?.length)}
+              onPress={() => {
+                navigation.navigate('Product', {
+                  title: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                  productId: item._id,
+                  color: item?.colors[item?.index],
+                });
+              }}>
+              <Image
+                source={
+                  IMAGENAME[item.name.replace(/\s/g, '')][
+                    item.colors[item.index]
+                  ]
+                }
+                style={styles.image}
+              />
               <View style={styles.desc}>
                 <Text style={styles.text}>{item.name}</Text>
                 <Text
@@ -90,33 +121,35 @@ const Products = () => {
                 <Text style={styles.textPrice}>{item.price}$</Text>
               </View>
               <View style={styles.moreColors}>
-                {item.colors.map((color: any) => (
-                  <TouchableOpacity
+                {item.colors.map((color: string, index: number) => (
+                  <View
+                    key={index}
                     style={[
                       styles.color,
                       {
                         backgroundColor: color,
                         borderColor: color === 'white' ? 'black' : color,
                       },
-                    ]}></TouchableOpacity>
+                    ]}></View>
                 ))}
               </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
       />
       {openedFilterModal && (
         <FilterModal
+          isOpen={openedFilterModal}
           values={values}
           defaultValues={defaultValues}
           setValues={setValues}
           setProducts={setProducts}
-          closeModal={() => handleOpenedFilterModal(false)}
+          closeModal={handleOpenedFilterModal}
         />
       )}
       {!openedFilterModal && (
         <View style={styles.iconBox}>
-          <TouchableOpacity onPress={() => handleOpenedFilterModal(true)}>
+          <TouchableOpacity onPress={handleOpenedFilterModal}>
             <Icon size={40} name="filter-alt" color={'black'} />
           </TouchableOpacity>
         </View>
@@ -141,6 +174,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     borderWidth: 1,
     borderColor: 'white',
+    marginBottom: 10,
   },
   iconBox: {
     width: 50,
@@ -161,6 +195,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderWidth: 1,
     borderColor: 'white',
+    marginBottom: 10,
   },
   text: {
     fontSize: 16,

@@ -23,6 +23,7 @@ router.post("/save-image", userController.saveImage);
 router.post("/cancel-image", userController.cancelUpload);
 router.post("/delete-image", userController.deleteImage);
 router.post("/image", upload, userController.uploadImage);
+router.post("/image-mobile", upload, userController.saveImageMobile);
 router.post("/sign-in", userController.login);
 router.post("/sign-up", userController.register);
 router.put("/edit-data", userController.edit);
