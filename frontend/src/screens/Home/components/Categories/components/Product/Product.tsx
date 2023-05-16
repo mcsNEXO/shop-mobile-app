@@ -1,5 +1,4 @@
 import {
-  View,
   Text,
   StyleSheet,
   Image,
@@ -9,35 +8,30 @@ import {
 } from 'react-native';
 import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
 import axios from '../../../../../../axios';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SizeModal from './SizeModal';
-import {useCartContext} from '../../../../../../context/CartContext';
 import useCartHook from '../../../../../../hooks/useCart';
+import {useFavoriteContext} from '../../../../../../context/FavoriteContext';
+import {OrdinaryProduct} from '../../../../../../helpers/typesProducts';
 
 const Product = () => {
   const route: any = useRoute();
-  const navigation: any = useNavigation();
-  const {setCart} = useCartHook();
-  const [product, setProduct] = React.useState<any>(null);
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
+  const {addProduct} = useCartHook();
+  const {favorite, addFavorite, deleteFavorite} = useFavoriteContext();
+  const [product, setProduct] = React.useState<OrdinaryProduct | null>(null);
   const [openedSizeModal, setOpenedSizeModal] = React.useState<boolean>(false);
-  const [size, setSize] = React.useState<number | null>(null);
+  const [size, setSize] = React.useState<number | null>(0);
   useEffect(() => {
     fetchProduct();
   }, []);
-
-  useEffect(() => {
-    if (openedSizeModal) {
-      navigation.setOptions({
-        headerShown: false,
-      });
-    } else {
-      navigation.setOptions({
-        headerShown: true,
-      });
-    }
-  }, [openedSizeModal]);
 
   const fetchProduct = async () => {
     const data = {
@@ -51,15 +45,53 @@ const Product = () => {
     }
   };
 
+  const addFavProduct = () => {
+    if (!product) return;
+    size
+      ? addFavorite({
+          ...product,
+          colors: route.params.color,
+          image: product.image
+            ?.filter(x => x.includes(route.params.color))
+            .toString(),
+          size: size,
+        })
+      : addFavorite({
+          ...product,
+          image: product.image
+            ?.filter(x => x.includes(route.params.color))
+            .toString(),
+          colors: route.params.color,
+        });
+  };
+
+  const deleteFavProduct = () => {
+    if (!product) return;
+    deleteFavorite({
+      ...product,
+      image: product.image
+        ?.filter(x => x.includes(route.params.color))
+        .toString(),
+      colors: route.params.color,
+    });
+  };
+
+  const handleAddToCart = (product: any) => {
+    if (!product && !size) return;
+    addProduct({
+      ...product,
+      colors: route.params.color,
+      size: size,
+    });
+  };
+
   return (
     <>
       <ScrollView style={styles.container}>
         {product && (
           <Image
             source={
-              IMAGENAME[product?.name?.replaceAll(' ', '')][
-                route?.params?.color
-              ]
+              IMAGENAME[product?.name?.replace(/\s/g, '')][route?.params?.color]
             }
             style={styles.image}
           />
@@ -81,7 +113,7 @@ const Product = () => {
                 }}>
                 <Image
                   style={styles.imageOption}
-                  source={IMAGENAME[product?.name?.replaceAll(' ', '')][color]}
+                  source={IMAGENAME[product?.name?.replace(/\s/g, '')][color]}
                 />
               </TouchableOpacity>
             );
@@ -104,16 +136,34 @@ const Product = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, {backgroundColor: 'black'}]}
-            onPress={() =>
-              setCart({...product, colors: route.params.color, size: size})
-            }>
+            onPress={() => handleAddToCart(product)}>
             <Text style={styles.cartBtn}>Add to cart</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.btnText}>
-              <Icon name="favorite-border" size={28} />
-            </Text>
-          </TouchableOpacity>
+          {favorite?.find(
+            x =>
+              JSON.stringify(x) ===
+              JSON.stringify({
+                ...product,
+                size: x.size,
+                image: product?.image
+                  ?.filter(x => x.includes(route.params.color))
+                  .toString(),
+                quantity: 1,
+                colors: route.params.color,
+              }),
+          ) ? (
+            <TouchableOpacity style={styles.button} onPress={deleteFavProduct}>
+              <Text style={styles.btnText}>
+                <Icon name={'favorite'} size={28} />
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.button} onPress={addFavProduct}>
+              <Text style={styles.btnText}>
+                <Icon name={'favorite-border'} size={28} />
+              </Text>
+            </TouchableOpacity>
+          )}
           <Text style={styles.descText}>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
@@ -125,10 +175,11 @@ const Product = () => {
           </Text>
         </ScrollView>
       </ScrollView>
-      {openedSizeModal && (
+      {openedSizeModal && product && (
         <SizeModal
-          gender={product?.gender}
-          type={product?.type}
+          isOpen={openedSizeModal}
+          gender={product.gender}
+          type={product.type}
           closeModal={() => setOpenedSizeModal(false)}
           setSize={setSize}
         />

@@ -6,7 +6,12 @@ import {
   Dimensions,
   Animated,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
 import {hambugerData} from '../../hamburgerData';
@@ -14,7 +19,7 @@ import {useHamburgerContext} from '../../context/HamburgerContext';
 
 export default function SideBar() {
   const {isOpenHamburger, setIsOpenHamburger} = useHamburgerContext();
-  const navigation: any = useNavigation();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
   const route = useRoute();
   const width = Dimensions.get('window').width * 0.65;
   const [index, setIndex] = React.useState(0);

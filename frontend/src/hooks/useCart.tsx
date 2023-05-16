@@ -2,22 +2,8 @@ import React from 'react';
 import {CartContext} from '../context/CartContext';
 import {AuthContext} from '../context/AuthContext';
 import axios from '../axios';
+import {ProductCartType} from '../helpers/typesProducts';
 import {setAsyncStorage} from '../helpers/asyncStorage';
-
-type Cart = {
-  _id: string;
-  type: string;
-  category: string;
-  name: string;
-  gender: string;
-  colors: string;
-  size: number;
-  price: number;
-  quantity: number;
-  image: string;
-  index: number;
-  _v: number;
-};
 
 const useCartHook = () => {
   const cartContext = React.useContext(CartContext);
@@ -25,7 +11,7 @@ const useCartHook = () => {
 
   const user = authContext.user;
   const cart = cartContext.cart;
-  const setCart = async (product: Cart) => {
+  const addProduct = async (product: ProductCartType) => {
     if (user) {
       const data = {
         userId: user._id,
@@ -36,7 +22,7 @@ const useCartHook = () => {
       cartContext.setCartStorage(res.data.cart);
     }
   };
-  return {setCart, cart};
+  return {addProduct, cart};
 };
 
 export default useCartHook;

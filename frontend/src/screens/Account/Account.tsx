@@ -1,4 +1,8 @@
-import {useNavigation} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from '@react-navigation/native';
 import {
   View,
   Text,
@@ -13,16 +17,16 @@ import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 
 const Account = () => {
-  const {navigate}: any = useNavigation();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
   const {user} = useAuthContext();
   const [newImage, setNewImage] = React.useState(null);
 
   const pickImageHandler = async () => {
     try {
-      const result: any = await DocumentPicker.pick({
+      const result = await DocumentPicker.pick({
         type: [DocumentPicker.types.images],
       });
-      navigate('ImageEditor', {file: result[0]});
+      navigation.navigate('ImageEditor', {file: result[0]});
     } catch (err: any) {
       console.log(err);
     }
@@ -48,7 +52,7 @@ const Account = () => {
           </Text>
           <TouchableOpacity
             style={styles.editBtn}
-            onPress={() => navigate('EditProfile')}>
+            onPress={() => navigation.navigate('EditProfile')}>
             <Text style={styles.editText}>Edit profile data</Text>
           </TouchableOpacity>
         </View>
@@ -83,12 +87,12 @@ const Account = () => {
           <View style={styles.buttons}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigate('Register')}>
+              onPress={() => navigation.navigate('Register')}>
               <Text style={styles.text}>Register</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigate('Login')}>
+              onPress={() => navigation.navigate('Login')}>
               <Text style={styles.text}>Log in</Text>
             </TouchableOpacity>
           </View>

@@ -1,14 +1,19 @@
 import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import useCategory from '../../../../hooks/useCategory';
 import React from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {categoryData} from '../../../../data';
 import SideBar from '../../../../components/SideBar/SideBar';
-import Header from '../../../../components/Header/Header';
+import Header from '../../../../components/Headers/Header';
 import NavPanel from '../NavPanel/NavPanel';
 
 const Categories = () => {
-  const navigation: any = useNavigation();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
   const {category} = useCategory();
   const type = categoryData?.categoryList?.find(
     e => e?.name === category,

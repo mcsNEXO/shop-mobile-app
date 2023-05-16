@@ -22,7 +22,9 @@ type LoginProps = {
 const ImageModal = ({navigation}: LoginProps) => {
   const route: any = useRoute();
   const {user, setAuth} = useAuthContext();
-  const [imageUri, setImageUri] = React.useState<any>(route.params?.file.uri);
+  const [imageUri, setImageUri] = React.useState<string>(
+    route.params?.file.uri,
+  );
 
   const saveImage = async () => {
     if (user === null) return;

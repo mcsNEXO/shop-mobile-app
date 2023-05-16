@@ -6,7 +6,7 @@ import {
   Dimensions,
 } from 'react-native';
 
-const BottomButtons = ({saveFiltersData}: any) => (
+const BottomButtons = ({saveFiltersData}: {saveFiltersData: () => void}) => (
   <View style={styles.bottomButtons}>
     <TouchableOpacity style={styles.bottomBtn}>
       <Text style={styles.textBtn}>Reset</Text>

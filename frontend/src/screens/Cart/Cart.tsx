@@ -13,7 +13,7 @@ import {
 import React from 'react';
 import {ParamListBase, NavigationProp} from '@react-navigation/native';
 import SideBar from '../../components/SideBar/SideBar';
-import HeaderCart from '../../components/Header/HeaderCart';
+import HeaderCart from '../../components/Headers/HeaderCart';
 import CartModal from './CartModal';
 import axios from '../../axios';
 import {useCartContext} from '../../context/CartContext';
@@ -22,6 +22,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {IMAGENAME} from '../../assets/images/shoes/image';
 import {emptyCart} from '../../assets/images/svg/img';
 import {SvgXml} from 'react-native-svg';
+import {ProductCartType} from '../../context/CartContext';
 
 type NavigationType = {
   navigation: NavigationProp<ParamListBase>;
@@ -42,6 +43,7 @@ const Cart = ({navigation}: NavigationType) => {
   //refs
   const height = React.useRef<any>(new Animated.Value(60)).current;
 
+  //variables
   const totalPrice = cart?.reduce((acc, product) => {
     return ((acc + product.price * product.quantity) * (100 - discount)) / 100;
   }, deliveryCost);
@@ -50,7 +52,7 @@ const Cart = ({navigation}: NavigationType) => {
     return acc + product.price * product.quantity;
   }, 0);
 
-  const updateQuantity = async (value: number, item: any) => {
+  const updateQuantity = async (value: number, item: ProductCartType) => {
     if (user) {
       const res = await axios.post('update-product', {
         userId: user._id,
@@ -63,7 +65,7 @@ const Cart = ({navigation}: NavigationType) => {
         setCartStorage(
           cart.map(x =>
             x._id === item._id &&
-            x.colors === item.color &&
+            x.colors === item.colors &&
             x.size === item.size
               ? {...x, quantity: value}
               : x,
@@ -96,7 +98,7 @@ const Cart = ({navigation}: NavigationType) => {
     }).start();
   };
 
-  const deleteProduct = async (product: any) => {
+  const deleteProduct = async (product: ProductCartType) => {
     if (user) {
       const res = await axios.post('delete-product', {
         userId: user._id,
@@ -110,6 +112,7 @@ const Cart = ({navigation}: NavigationType) => {
       );
     }
   };
+
   return (
     <>
       <SideBar />

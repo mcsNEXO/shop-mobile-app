@@ -5,52 +5,34 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  Modal,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import SortBy from './components/SortBy';
 import CheckBoxes from './components/CheckBoxes';
 import PriceInputs from './components/PriceInputs';
 import Colors from './components/Colors';
 import Header from './components/Header';
-import BottomButtons from './components/BottomButtons';
 import axios from '../../../axios';
 import Size from './components/Size';
-
-interface IdefaultValues {
-  sortedBy: {
-    value: string;
-    sort: number;
-    label?: string;
-  };
-  price: string;
-  toPrice: string;
-  colors: string[];
-  genders: any[];
-  sizes: number[];
-}
+import {
+  DefaultFilterValues,
+  OrdinaryProduct,
+} from '../../../helpers/typesProducts';
 
 interface IFilterModal {
+  isOpen: boolean;
   closeModal: () => void;
-  setProducts: React.Dispatch<React.SetStateAction<any[] | undefined>>;
-  values: any;
-  setValues: React.Dispatch<
-    React.SetStateAction<{
-      sortedBy: {
-        value: string;
-        sort: number;
-        label?: string;
-      };
-      price: string;
-      toPrice: string;
-      colors: string[];
-      genders: any[];
-      sizes: number[];
-    }>
+  setProducts: React.Dispatch<
+    React.SetStateAction<OrdinaryProduct[] | undefined>
   >;
-  defaultValues: IdefaultValues;
+  values: DefaultFilterValues;
+  setValues: React.Dispatch<React.SetStateAction<DefaultFilterValues>>;
+  defaultValues: DefaultFilterValues;
 }
 
 const FilterModal = ({
+  isOpen,
   closeModal,
   setProducts,
   values,
@@ -162,46 +144,47 @@ const FilterModal = ({
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <Header closeModal={closeModal} />
-        <SortBy
-          sortedBy={sortedBy}
-          setSortedBy={setSortedBy}
-          style={styles.component}
-        />
-        <CheckBoxes
-          genders={genders}
-          setGenderHandler={setGenderHandler}
-          style={styles.component}
-        />
-        <PriceInputs
-          price={price}
-          toPrice={toPrice}
-          priceHandler={priceHandler}
-          style={styles.component}
-        />
-        <Colors
-          colorsHandler={colorsHandler}
-          colors={colors}
-          style={styles.component}
-        />
-        <Size
-          style={styles.component}
-          sizes={sizes}
-          sizesHandler={sizesHandler}
-        />
-      </ScrollView>
-      {/* <BottomButtons /> */}
-      <View style={styles.bottomButtons}>
-        <TouchableOpacity style={styles.bottomBtn} onPress={resetValues}>
-          <Text style={styles.textBtn}>Reset</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomBtn} onPress={saveFiltersData}>
-          <Text style={styles.textBtn}>Save</Text>
-        </TouchableOpacity>
+    <Modal visible={isOpen} animationType="slide">
+      <View style={styles.container}>
+        <ScrollView>
+          <Header closeModal={closeModal} />
+          <SortBy
+            sortedBy={sortedBy}
+            setSortedBy={setSortedBy}
+            style={styles.component}
+          />
+          <CheckBoxes
+            genders={genders}
+            setGenderHandler={setGenderHandler}
+            style={styles.component}
+          />
+          <PriceInputs
+            price={price}
+            toPrice={toPrice}
+            priceHandler={priceHandler}
+            style={styles.component}
+          />
+          <Colors
+            colorsHandler={colorsHandler}
+            colors={colors}
+            style={styles.component}
+          />
+          <Size
+            style={styles.component}
+            sizes={sizes}
+            sizesHandler={sizesHandler}
+          />
+        </ScrollView>
+        <View style={styles.bottomButtons}>
+          <TouchableOpacity style={styles.bottomBtn} onPress={resetValues}>
+            <Text style={styles.textBtn}>Reset</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottomBtn} onPress={saveFiltersData}>
+            <Text style={styles.textBtn}>Save</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 };
 

@@ -12,6 +12,7 @@ import Cart from '../screens/Cart/Cart';
 import Settings from '../screens/Settings/Settings';
 import EditProfile from '../screens/Account/components/EditProfile/EditProfile';
 import ImageModal from '../screens/Account/components/Modals/ImageEditor';
+import Favorite from '../screens/Favorite/Favorite';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -46,7 +47,7 @@ const Navigator = () => {
           component={Product}
           options={({route}: any) => ({
             title: route.params?.title,
-            headerShown: false,
+            headerShown: true,
           })}
         />
         <Stack.Screen
@@ -91,6 +92,14 @@ const Navigator = () => {
           component={Cart}
           options={{
             title: 'Cart',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name={'Favorite'}
+          component={Favorite}
+          options={{
+            title: 'Favorite',
             headerShown: false,
           }}
         />

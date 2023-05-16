@@ -11,7 +11,7 @@ interface IContext {
 }
 
 type User = {
-  _id: any;
+  _id: string;
   email: string;
   password: string;
   firstName: string;
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
 
   React.useEffect(() => {
     (async () => {
-      const data: any = await getAsyncStorage('auth');
+      const data: string | null | undefined = await getAsyncStorage('auth');
       if (!data) return;
       try {
         setAuth(JSON.parse(data));

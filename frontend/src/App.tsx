@@ -4,13 +4,16 @@ import Navigator from './navigator/Navigator';
 import {AuthProvider} from './context/AuthContext';
 import {HamburgerProvider} from './context/HamburgerContext';
 import {CartProvider} from './context/CartContext';
+import {FavoriteProvider} from './context/FavoriteContext';
 
 const App = () => (
   <CategoryProvider>
     <HamburgerProvider>
       <CartProvider>
         <AuthProvider>
-          <Navigator />
+          <FavoriteProvider>
+            <Navigator />
+          </FavoriteProvider>
         </AuthProvider>
       </CartProvider>
     </HamburgerProvider>
