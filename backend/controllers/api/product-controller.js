@@ -8,9 +8,23 @@ class ProductController {
       return res.status(402).json({ message: "Cannot find this product" });
     }
   }
-
+  async getSearchedNamesOfProducts(req, res) {
+    const inputString = req.body.inputText;
+    let products;
+    try {
+      if (inputString)
+        products = await Shoes.find(
+          { name: { $regex: inputString } },
+          { name: 1 }
+        );
+      else products = await Shoes.find({}, { name: 1 });
+      return res.status(200).json({ products });
+    } catch (error) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
   async getSearchedProduct(req, res) {
-    const params = { ...req.body, color: ["white"] };
+    const params = { ...req.body };
     console.log("params", params);
     let products;
     try {

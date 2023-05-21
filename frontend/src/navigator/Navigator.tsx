@@ -13,6 +13,8 @@ import Settings from '../screens/Settings/Settings';
 import EditProfile from '../screens/Account/components/EditProfile/EditProfile';
 import ImageModal from '../screens/Account/components/Modals/ImageEditor';
 import Favorite from '../screens/Favorite/Favorite';
+import HeaderSearch from '../components/Headers/HeaderSearch';
+import SearchProducts from '../screens/SearchProducts/SearchProducts';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -110,6 +112,11 @@ const Navigator = () => {
             title: 'Settings',
             headerShown: false,
           }}
+        />
+        <Stack.Screen
+          name="SearchProducts"
+          component={SearchProducts}
+          options={{title: 'Search products', headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>

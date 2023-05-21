@@ -34,7 +34,10 @@ const Products = () => {
     price: '0',
     toPrice: '1000',
     colors: [],
-    genders: [route?.params.gender.toLowerCase()],
+    genders: [
+      route?.params.gender ? route?.params.gender.toLowerCase() : 'woman',
+      'man',
+    ],
     sizes: [],
   };
   //states
@@ -55,9 +58,13 @@ const Products = () => {
     setLoading(true);
     try {
       const data = {
-        type: route.params.type.toLowerCase(),
-        category: route?.params.category.toLowerCase(),
-        gender: [route?.params.gender.toLowerCase()],
+        type: route.params.type ? route.params.type.toLowerCase() : 'any',
+        category: route.params.category
+          ? route?.params.category.toLowerCase()
+          : 'any',
+        gender: [
+          route?.params.gender ? route?.params.gender.toLowerCase() : 'any',
+        ],
       };
       const res = await axios.post('get-searched-products', data);
       return setProducts(res.data.products);
