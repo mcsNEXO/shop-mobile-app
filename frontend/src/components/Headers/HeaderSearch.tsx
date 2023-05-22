@@ -1,4 +1,11 @@
-import {View, StyleSheet, TextInput, Dimensions} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Dimensions,
+  NativeSyntheticEvent,
+  TextInputKeyPressEventData,
+} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
@@ -10,9 +17,14 @@ import {
 interface IHeaderSearch {
   handleSearchDelayed: (val: string) => void;
   inputText: string;
+  onEnterPress: () => void;
 }
 
-const HeaderSearch = ({handleSearchDelayed, inputText}: IHeaderSearch) => {
+const HeaderSearch = ({
+  handleSearchDelayed,
+  onEnterPress,
+  inputText,
+}: IHeaderSearch) => {
   const navigation: NavigationProp<ParamListBase> = useNavigation();
   return (
     <View style={styles.container}>
@@ -26,6 +38,7 @@ const HeaderSearch = ({handleSearchDelayed, inputText}: IHeaderSearch) => {
         style={styles.input}
         value={inputText}
         onChangeText={val => handleSearchDelayed(val)}
+        onSubmitEditing={onEnterPress}
         placeholder="Search product"
         placeholderTextColor={'gray'}
       />

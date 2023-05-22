@@ -1,4 +1,6 @@
 const Shoes = require("../../db/models/shoes");
+const searchProducts = require("../../functions/searchProductByName");
+
 class ProductController {
   async fetchProduct(req, res) {
     try {
@@ -65,7 +67,7 @@ class ProductController {
               $exists: true,
             },
             gender:
-              params.gender.length > 0
+              params.gender.length > 0 && params.gender[0] !== null
                 ? {
                     $in: params.gender,
                   }
@@ -78,6 +80,7 @@ class ProductController {
                   $lt: Number(params.price.split("-")[1]),
                 }
               : { $exists: true },
+            // name: params.inputText ?  { $regex: `.*${params.inputText}.*`, $options: "i" } : {exists:true},
           },
         },
         {
@@ -86,6 +89,9 @@ class ProductController {
           },
         },
       ]);
+      if (params.inputText) {
+        products = searchProducts(params.inputText, products);
+      }
       return res.status(200).json({ products });
     } catch (err) {
       console.log(err);

@@ -1,13 +1,5 @@
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   NavigationProp,
   ParamListBase,
@@ -26,11 +18,11 @@ const SearchProducts = () => {
   const [timeoutState, setTimeoutState] = React.useState<number>();
 
   const handleSearch = async (val: string) => {
+    console.log(val);
     try {
       const response = await axios.post('get-search-product-names', {
         inputText: val,
       });
-      console.log(response.data.products);
       setSearchNameOfProducts(response.data.products);
     } catch (error) {
       console.error(error);
@@ -55,6 +47,7 @@ const SearchProducts = () => {
       <HeaderSearch
         handleSearchDelayed={handleSearchDelayed}
         inputText={inputText}
+        onEnterPress={() => navigation.navigate('Products', {inputText})}
       />
       {searchNamesOfProducts?.map((el, index) => (
         <View key={index}>

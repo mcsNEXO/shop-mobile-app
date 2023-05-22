@@ -58,13 +58,14 @@ const Products = () => {
     setLoading(true);
     try {
       const data = {
-        type: route.params.type ? route.params.type.toLowerCase() : 'any',
+        type: route.params.type ? route.params.type.toLowerCase() : null,
         category: route.params.category
           ? route?.params.category.toLowerCase()
-          : 'any',
+          : null,
         gender: [
-          route?.params.gender ? route?.params.gender.toLowerCase() : 'any',
+          route?.params.gender ? route?.params.gender.toLowerCase() : null,
         ],
+        inputText: route.params?.inputText ?? null,
       };
       const res = await axios.post('get-searched-products', data);
       return setProducts(res.data.products);
@@ -74,6 +75,7 @@ const Products = () => {
       setLoading(false);
     }
   };
+  console.log('route', route);
 
   React.useEffect(() => {
     getData();
