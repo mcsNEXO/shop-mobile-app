@@ -40,3 +40,8 @@ export type DefaultFilterValues = {
   genders: any[];
   sizes: number[];
 };
+
+export type ProductNames = {
+  _id: string;
+  name: string;
+};

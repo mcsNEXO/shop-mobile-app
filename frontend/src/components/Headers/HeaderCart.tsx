@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomColor: 'gray',
     borderBottomWidth: 0.3,
+    backgroundColor: 'white',
   },
   row: {
     flexDirection: 'row',
