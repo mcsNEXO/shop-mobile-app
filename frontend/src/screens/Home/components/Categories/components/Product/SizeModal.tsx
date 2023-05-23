@@ -7,7 +7,7 @@ import {
   Dimensions,
   Modal,
 } from 'react-native';
-import {sizesGenders} from '../../../../../../filterData';
+import {sizesGenders} from '../../../../../../data/filterData';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 

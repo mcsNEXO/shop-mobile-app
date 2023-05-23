@@ -6,6 +6,7 @@ interface IContext {
   cart: ProductCartType[] | null;
   setCart: React.Dispatch<React.SetStateAction<ProductCartType[] | null>>;
   setCartStorage: (cart: ProductCartType[]) => void;
+  clearCart: () => Promise<void>;
 }
 
 export type ProductCartType = {
@@ -32,17 +33,21 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({
 
   React.useEffect(() => {
     (async () => {
-      const data2 = await getAsyncStorage('auth');
+      const data = await getAsyncStorage('auth');
       let cartData: any;
-      if (data2) {
+      if (data !== 'null' && data !== null && data) {
         cartData = await axios.post('get-product', {
-          userId: JSON.parse(data2)._id,
+          userId: JSON.parse(data)._id,
         });
       } else {
         cartData = await getAsyncStorage('cart');
       }
       try {
-        setCartStorage(data2 ? cartData.data.cart : JSON.parse(cartData));
+        setCartStorage(
+          data !== 'null' && data !== null && data
+            ? cartData.data.cart
+            : JSON.parse(cartData),
+        );
       } catch (err) {
         console.log(err);
       }
@@ -54,7 +59,13 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({
     setAsyncStorage('cart', cart);
   };
 
+  const clearCart = async () => {
+    setCart(null);
+    setAsyncStorage('cart', null);
+  };
+
   const value = {
+    clearCart,
     cart,
     setCart,
     setCartStorage,

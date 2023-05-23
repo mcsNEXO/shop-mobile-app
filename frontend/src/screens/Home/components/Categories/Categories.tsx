@@ -7,7 +7,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {categoryData} from '../../../../data';
+import {categoryData} from '../../../../data/data';
 import SideBar from '../../../../components/SideBar/SideBar';
 import Header from '../../../../components/Headers/Header';
 import NavPanel from '../NavPanel/NavPanel';

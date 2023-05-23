@@ -6,7 +6,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {categoryData} from '../../../../../../data';
+import {categoryData} from '../../../../../../data/data';
 
 const TypeCategories = () => {
   //hooks

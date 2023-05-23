@@ -68,6 +68,7 @@ export default Account;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
     padding: 20,
   },
   title: {

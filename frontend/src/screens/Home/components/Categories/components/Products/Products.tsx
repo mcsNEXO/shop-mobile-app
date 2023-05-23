@@ -55,6 +55,7 @@ const Products = () => {
   };
 
   const getData = async () => {
+    console.log('get-data');
     setLoading(true);
     try {
       const data = {
@@ -68,16 +69,17 @@ const Products = () => {
         inputText: route.params?.inputText ?? null,
       };
       const res = await axios.post('get-searched-products', data);
-      return setProducts(res.data.products);
+      setProducts(res.data.products);
     } catch (err) {
       console.log(err);
     } finally {
       setLoading(false);
     }
   };
-  console.log('route', route);
 
   React.useEffect(() => {
+    route.params.inputText &&
+      navigation.setOptions({title: route.params.inputText});
     getData();
   }, []);
 
@@ -150,6 +152,7 @@ const Products = () => {
         <FilterModal
           isOpen={openedFilterModal}
           values={values}
+          inputText={route.params.inputText}
           defaultValues={defaultValues}
           setValues={setValues}
           setProducts={setProducts}

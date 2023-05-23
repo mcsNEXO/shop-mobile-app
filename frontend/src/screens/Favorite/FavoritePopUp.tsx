@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {IMAGENAME} from '../../assets/images/shoes/image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {sizesGenders} from '../../filterData';
+import {sizesGenders} from '../../data/filterData';
 import {
   NavigationProp,
   ParamListBase,

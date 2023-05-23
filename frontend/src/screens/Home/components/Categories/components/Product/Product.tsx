@@ -21,14 +21,27 @@ import useCartHook from '../../../../../../hooks/useCart';
 import {useFavoriteContext} from '../../../../../../context/FavoriteContext';
 import {OrdinaryProduct} from '../../../../../../helpers/typesProducts';
 
+type errorType = {
+  error: string;
+  errorName: string;
+};
+
 const Product = () => {
-  const route: any = useRoute();
-  const navigation: NavigationProp<ParamListBase> = useNavigation();
-  const {addProduct} = useCartHook();
-  const {favorite, addFavorite, deleteFavorite} = useFavoriteContext();
+  //states
   const [product, setProduct] = React.useState<OrdinaryProduct | null>(null);
   const [openedSizeModal, setOpenedSizeModal] = React.useState<boolean>(false);
-  const [size, setSize] = React.useState<number | null>(0);
+  const [size, setSize] = React.useState<number | null>(null);
+  const [error, setError] = React.useState<errorType>({
+    error: '',
+    errorName: '',
+  });
+
+  //hooks
+  const {favorite, addFavorite, deleteFavorite} = useFavoriteContext();
+  const {addProduct} = useCartHook();
+  const route: any = useRoute();
+  const navigation: NavigationProp<ParamListBase> = useNavigation();
+
   useEffect(() => {
     fetchProduct();
   }, []);
@@ -77,7 +90,8 @@ const Product = () => {
   };
 
   const handleAddToCart = (product: any) => {
-    if (!product && !size) return;
+    if (!product || !size)
+      return setError({error: 'Select size!', errorName: 'size'});
     addProduct({
       ...product,
       colors: route.params.color,
@@ -126,7 +140,9 @@ const Product = () => {
           <Text style={styles.title}>{product?.name}</Text>
           <Text style={styles.color}>Color: {route.params.color}</Text>
           <Text style={styles.price}>{product?.price}$</Text>
-
+          {error.errorName === 'size' && (
+            <Text style={styles.error}>{error.error}</Text>
+          )}
           <TouchableOpacity
             style={styles.button}
             onPress={() => setOpenedSizeModal(true)}>
@@ -263,5 +279,11 @@ const styles = StyleSheet.create({
   cartBtn: {
     color: 'white',
     fontSize: 18,
+  },
+  error: {
+    marginTop: 5,
+    fontSize: 17,
+    textAlign: 'center',
+    color: 'red',
   },
 });
