@@ -14,7 +14,7 @@ import {
 } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
-import {hambugerData} from '../../hamburgerData';
+import {hambugerData} from '../../data/hamburgerData';
 import {useHamburgerContext} from '../../context/HamburgerContext';
 
 export default function SideBar() {

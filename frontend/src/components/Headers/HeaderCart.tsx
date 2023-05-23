@@ -17,7 +17,6 @@ const HeaderCart = () => {
         />
         <Text style={styles.title}>Cart</Text>
       </View>
-      <Icon name="search" size={20} color={'black'} style={styles.search} />
     </View>
   );
 };

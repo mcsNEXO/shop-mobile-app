@@ -21,6 +21,7 @@ import {
 } from '../../../helpers/typesProducts';
 
 interface IFilterModal {
+  inputText: string;
   isOpen: boolean;
   closeModal: () => void;
   setProducts: React.Dispatch<
@@ -37,6 +38,7 @@ const FilterModal = ({
   setProducts,
   values,
   setValues,
+  inputText,
   defaultValues,
 }: IFilterModal) => {
   const ALLOW_NUMBERS = '0123456789';
@@ -130,16 +132,17 @@ const FilterModal = ({
   const saveFiltersData = async () => {
     setValues({sortedBy, price, toPrice, colors, genders, sizes});
     if (!price || !toPrice) checkIsEmptyInput();
-    const url = {
+    const data = {
       colors: colors.length > 0 ? colors : null,
       size: [].length > 0 ? colors : null,
       sort: sortedBy,
       gender: genders,
       price: `${price ? price : '0'}-${toPrice ? toPrice : '1000'}`,
       sizes: sizes.length > 0 ? sizes : null,
+      inputText: inputText,
     };
-    const res = await axios.post('get-shoes', {url});
-    setProducts(res.data.shoes);
+    const res = await axios.post('get-searched-products', data);
+    setProducts(res.data.products);
     closeModal();
   };
 

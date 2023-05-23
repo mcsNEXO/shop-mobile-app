@@ -2,7 +2,7 @@ import React from 'react';
 import useCategory from '../../../../hooks/useCategory';
 import {FlatList, StyleSheet} from 'react-native';
 import Item from './components/Item';
-import {categoryData} from '../../../../data';
+import {categoryData} from '../../../../data/data';
 
 const NavPanel = () => {
   const {category, setCategory} = useCategory();

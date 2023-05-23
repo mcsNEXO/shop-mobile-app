@@ -13,8 +13,8 @@ import Settings from '../screens/Settings/Settings';
 import EditProfile from '../screens/Account/components/EditProfile/EditProfile';
 import ImageModal from '../screens/Account/components/Modals/ImageEditor';
 import Favorite from '../screens/Favorite/Favorite';
-import HeaderSearch from '../components/Headers/HeaderSearch';
 import SearchProducts from '../screens/SearchProducts/SearchProducts';
+import HeaderRightProducts from '../components/Headers/HeaderRightProducts';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -42,6 +42,7 @@ const Navigator = () => {
           options={({route}: any) => ({
             title: route.params?.category,
             headerShown: true,
+            headerRight: () => <HeaderRightProducts />,
           })}
         />
         <Stack.Screen
@@ -110,7 +111,7 @@ const Navigator = () => {
           component={Settings}
           options={{
             title: 'Settings',
-            headerShown: false,
+            headerShown: true,
           }}
         />
         <Stack.Screen

@@ -26,8 +26,11 @@ class ProductController {
     }
   }
   async getSearchedProduct(req, res) {
+    console.log(req.body);
     const params = { ...req.body };
     console.log("params", params);
+    const obj = new Object();
+    if (params.sort) obj[params.sort.value] = params.sort.sort;
     let products;
     try {
       products = await Shoes.aggregate([
@@ -38,7 +41,7 @@ class ProductController {
             type: 1,
             colors: params?.colors
               ? {
-                  $setIntersection: ["$colors", params.colors?.split(",")],
+                  $setIntersection: ["$colors", params.colors],
                 }
               : 1,
             price: 1,
@@ -84,9 +87,7 @@ class ProductController {
           },
         },
         {
-          $sort: {
-            price: params.sort === "high-low" ? 1 : -1,
-          },
+          $sort: params.sort ? obj : { date: 1 },
         },
       ]);
       if (params.inputText) {

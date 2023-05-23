@@ -8,6 +8,7 @@ interface IContext {
   user: User | null;
   setAuth: React.Dispatch<React.SetStateAction<User | null>>;
   setAuthStorage: (user: User) => void;
+  clearAuth: () => Promise<void>;
 }
 
 type User = {
@@ -40,6 +41,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
   }, []);
 
   const setAuthStorage = async (user: User) => {
+    console.log(user);
     setAuth(user);
     setAsyncStorage('auth', user);
     const data2 = {
@@ -49,10 +51,16 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
     setCartStorage(res.data.cart);
   };
 
+  const clearAuth = async () => {
+    setAuth(null);
+    setAsyncStorage('auth', null);
+  };
+
   const value = {
     user,
     setAuth,
     setAuthStorage,
+    clearAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

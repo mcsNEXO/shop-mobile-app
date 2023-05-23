@@ -17,7 +17,6 @@ const HeaderFavorite = () => {
         />
         <Text style={styles.title}>Favorite</Text>
       </View>
-      <Icon name="edit" size={25} color={'black'} style={styles.search} />
     </View>
   );
 };

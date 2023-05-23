@@ -4,11 +4,14 @@ import axios from '../axios';
 import {useAuthContext} from './AuthContext';
 
 interface IContext {
-  favorite: ProductFavoriteType[];
-  setFavorite: React.Dispatch<React.SetStateAction<ProductFavoriteType[]>>;
-  setFavoriteStorage: (product: ProductFavoriteType[]) => Promise<void>;
+  favorite: ProductFavoriteType[] | null;
+  setFavorite: React.Dispatch<
+    React.SetStateAction<ProductFavoriteType[] | null>
+  >;
+  setFavoriteStorage: (product: ProductFavoriteType[] | null) => Promise<void>;
   deleteFavorite: (product: ProductFavoriteType) => Promise<void>;
   addFavorite: (product: ProductFavoriteType) => Promise<void>;
+  clearFavorite: () => Promise<void>;
 }
 
 export type ProductFavoriteType = {
@@ -31,24 +34,27 @@ export const FavoriteContext = React.createContext<IContext>(null as any);
 export const FavoriteProvider: React.FC<{children: React.ReactNode}> = ({
   children,
 }) => {
-  const [favorite, setFavorite] = React.useState<ProductFavoriteType[]>([]);
+  const [favorite, setFavorite] = React.useState<ProductFavoriteType[] | null>(
+    [],
+  );
   const {user} = useAuthContext();
 
   React.useEffect(() => {
     (async () => {
       const data2 = await getAsyncStorage('auth');
       let favoriteData: any;
-      if (data2) {
+      if (data2 !== 'null' && data2 !== null && data2) {
         favoriteData = await axios.post('get-fav-product', {
           userId: JSON.parse(data2)._id,
         });
       } else {
         favoriteData = await getAsyncStorage('cart');
-        if (!favoriteData) return;
       }
       try {
         setFavoriteStorage(
-          data2 ? favoriteData?.data.products : JSON.parse(favoriteData),
+          data2 !== 'null' && data2 !== null && data2
+            ? favoriteData?.data.products
+            : JSON.parse(favoriteData),
         );
       } catch (err) {
         console.log(err);
@@ -75,12 +81,18 @@ export const FavoriteProvider: React.FC<{children: React.ReactNode}> = ({
     setFavoriteStorage(res.data.cart);
   };
 
-  const setFavoriteStorage = async (product: ProductFavoriteType[]) => {
+  const setFavoriteStorage = async (product: ProductFavoriteType[] | null) => {
     setFavorite(product);
     setAsyncStorage('favorite', product);
   };
 
+  const clearFavorite = async () => {
+    setFavorite(null);
+    setAsyncStorage('favorite', null);
+  };
+
   const value = {
+    clearFavorite,
     favorite,
     setFavorite,
     deleteFavorite,

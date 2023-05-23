@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import useCategory from '../../../../hooks/useCategory';
-import {sizesGenders} from '../../../../filterData';
+import {sizesGenders} from '../../../../data/filterData';
 
 interface ISize {
   style: any;

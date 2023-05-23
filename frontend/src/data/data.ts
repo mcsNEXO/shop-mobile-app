@@ -324,5 +324,21 @@ export const categoryData = {
         },
       ],
     },
+    {
+      id: 4,
+      name: 'Promotions',
+      children: [
+        {
+          id: 1,
+          name: 'Promotions',
+          children: [
+            {
+              id: 1,
+              name: 'Promotions',
+            },
+          ],
+        },
+      ],
+    },
   ],
 };

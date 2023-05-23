@@ -1,6 +1,6 @@
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import React from 'react';
-import {colorsData} from '../../../../filterData';
+import {colorsData} from '../../../../data/filterData';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface IColors {
