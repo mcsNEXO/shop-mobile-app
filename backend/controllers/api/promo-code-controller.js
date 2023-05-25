@@ -2,7 +2,6 @@ const PromoCode = require("../../db/models/promocode");
 class PromoCodeController {
   async getCode(req, res) {
     const code = await PromoCode.find({ promocode: req.body.code });
-    console.log(code);
     code.length > 0
       ? res
           .status(200)

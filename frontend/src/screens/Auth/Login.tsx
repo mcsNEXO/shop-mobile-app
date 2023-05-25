@@ -91,7 +91,6 @@ const Login = ({navigation}: LoginProps) => {
       password,
     };
     const localCart = cart;
-    console.log('localcart', localCart);
     try {
       const res = await axios.post('sign-in', data);
       setAuthStorage(res.data.user);

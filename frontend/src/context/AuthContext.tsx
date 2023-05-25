@@ -41,7 +41,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
   }, []);
 
   const setAuthStorage = async (user: User) => {
-    console.log(user);
     setAuth(user);
     setAsyncStorage('auth', user);
     const data2 = {

@@ -55,7 +55,6 @@ const Products = () => {
   };
 
   const getData = async () => {
-    console.log('get-data');
     setLoading(true);
     try {
       const data = {

@@ -36,7 +36,6 @@ router.post("/get-product", cartController.getProduct);
 router.post("/get-fav-product", cartController.getFavProduct);
 router.post("/delete-favorite", cartController.deleteFavorite);
 
-router.post("/get-shoes", shoesController.getShoes);
 router.post("/get-promocode", promoCodeController.getCode);
 
 router.post("/fetch-product", productController.fetchProduct);

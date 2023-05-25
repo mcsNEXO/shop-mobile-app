@@ -26,9 +26,7 @@ class ProductController {
     }
   }
   async getSearchedProduct(req, res) {
-    console.log(req.body);
     const params = { ...req.body };
-    console.log("params", params);
     const obj = new Object();
     if (params.sort) obj[params.sort.value] = params.sort.sort;
     let products;
