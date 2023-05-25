@@ -20,7 +20,11 @@ const Stack = createNativeStackNavigator();
 const Navigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Search">
+      <Stack.Navigator
+        initialRouteName="Search"
+        screenOptions={{
+          animation: 'slide_from_right',
+        }}>
         <Stack.Screen
           options={{
             headerShown: false,

@@ -23,15 +23,15 @@ const Settings = () => {
   };
   return (
     <View>
-      {settingsData.map(({group, data}) => (
-        <>
-          {data.map(({name}) => (
-            <TouchableOpacity style={styles.btn}>
+      {settingsData.map(({group, data}, index) => (
+        <View key={index}>
+          {data.map(({name}, index) => (
+            <TouchableOpacity style={styles.btn} key={index}>
               <Text style={styles.btnText}>{name}</Text>
             </TouchableOpacity>
           ))}
           <View style={styles.blank} />
-        </>
+        </View>
       ))}
       {user ? (
         <TouchableOpacity style={styles.logout} onPress={logout}>
