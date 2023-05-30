@@ -15,6 +15,8 @@ import ImageModal from '../screens/Account/components/Modals/ImageEditor';
 import Favorite from '../screens/Favorite/Favorite';
 import SearchProducts from '../screens/SearchProducts/SearchProducts';
 import HeaderRightProducts from '../components/Headers/HeaderRightProducts';
+import AdminPanel from '../screens/Admin/AdminPanel';
+import AddProduct from '../screens/Admin/components/AddProduct';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -122,6 +124,20 @@ const Navigator = () => {
           name="SearchProducts"
           component={SearchProducts}
           options={{title: 'Search products', headerShown: false}}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+          }}
+          name={'AdminPanel'}
+          component={AdminPanel}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+          }}
+          name={'AddProduct'}
+          component={AddProduct}
         />
       </Stack.Navigator>
     </NavigationContainer>

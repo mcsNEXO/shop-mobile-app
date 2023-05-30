@@ -99,6 +99,20 @@ export default function SideBar() {
               <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
           ))}
+          <TouchableOpacity
+            onPress={() => {
+              setIsOpenHamburger(false);
+              navigation.navigate(`AdminPanel`);
+            }}
+            style={[
+              styles.option,
+              index === 0 && styles.optionFirstChild,
+              'AdminPanel' === route.name && {backgroundColor: '#d8d8d8ce'},
+            ]}
+            key={index}>
+            <Icon name={'md-key-outline'} size={28} color={'black'} />
+            <Text style={styles.text}>Admin panel</Text>
+          </TouchableOpacity>
         </View>
       </Animated.ScrollView>
     </>
