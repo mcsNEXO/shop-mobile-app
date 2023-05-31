@@ -18,7 +18,6 @@ const SearchProducts = () => {
   const [timeoutState, setTimeoutState] = React.useState<number>();
 
   const handleSearch = async (val: string) => {
-    console.log(val);
     try {
       const response = await axios.post('get-search-product-names', {
         inputText: val,

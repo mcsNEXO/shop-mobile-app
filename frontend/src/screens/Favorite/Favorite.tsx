@@ -32,8 +32,8 @@ const Favorite = ({navigation}: TypeNavigationProp) => {
     <>
       <SideBar />
       <HeaderFavorite />
-      {user ? (
-        favorite.length > 0 ? (
+      {user && favorite ? (
+        favorite?.length > 0 ? (
           <FlatList
             numColumns={2}
             data={favorite}

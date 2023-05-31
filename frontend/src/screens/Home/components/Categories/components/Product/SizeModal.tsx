@@ -16,12 +16,18 @@ interface ISizeModal {
   type: string;
   isOpen: boolean;
   closeModal: () => void;
-  setSize: React.Dispatch<React.SetStateAction<number | null>>;
+  handleSize: (size: number) => void;
 }
 
-const SizeModal = ({gender, type, closeModal, setSize, isOpen}: ISizeModal) => {
-  const handleSize = (size: number) => {
-    setSize(size);
+const SizeModal = ({
+  gender,
+  type,
+  closeModal,
+  handleSize,
+  isOpen,
+}: ISizeModal) => {
+  const chooseSize = (size: number) => {
+    handleSize(size);
     closeModal();
   };
   return (
@@ -38,7 +44,7 @@ const SizeModal = ({gender, type, closeModal, setSize, isOpen}: ISizeModal) => {
             <TouchableOpacity
               style={styles.button}
               key={index}
-              onPress={() => handleSize(size)}>
+              onPress={() => chooseSize(size)}>
               <Text style={styles.text}>{size}</Text>
             </TouchableOpacity>
           );

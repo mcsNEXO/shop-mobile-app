@@ -72,13 +72,17 @@ export const FavoriteProvider: React.FC<{children: React.ReactNode}> = ({
   };
 
   const addFavorite = async (product: ProductFavoriteType) => {
-    const res = await axios.post('add-product', {
-      userId: user?._id,
-      product,
-      type: 'favorite',
-    });
-    console.log(res.data.cart);
-    setFavoriteStorage(res.data.cart);
+    try {
+      const res = await axios.post('add-product', {
+        userId: user?._id,
+        product,
+        type: 'favorite',
+      });
+      console.log(res.data.cart);
+      setFavoriteStorage(res.data.cart);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const setFavoriteStorage = async (product: ProductFavoriteType[] | null) => {

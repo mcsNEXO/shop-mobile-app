@@ -20,6 +20,7 @@ import SizeModal from './SizeModal';
 import useCartHook from '../../../../../../hooks/useCart';
 import {useFavoriteContext} from '../../../../../../context/FavoriteContext';
 import {OrdinaryProduct} from '../../../../../../helpers/typesProducts';
+import {useAuthContext} from '../../../../../../context/AuthContext';
 
 type errorType = {
   error: string;
@@ -39,12 +40,18 @@ const Product = () => {
   //hooks
   const {favorite, addFavorite, deleteFavorite} = useFavoriteContext();
   const {addProduct} = useCartHook();
+  const {user} = useAuthContext();
   const route: any = useRoute();
   const navigation: NavigationProp<ParamListBase> = useNavigation();
 
   useEffect(() => {
     fetchProduct();
   }, []);
+
+  const handleSize = (size: number) => {
+    error.errorName === 'size' && setError({error: '', errorName: ''});
+    setSize(size);
+  };
 
   const fetchProduct = async () => {
     const data = {
@@ -59,6 +66,11 @@ const Product = () => {
   };
 
   const addFavProduct = () => {
+    if (!user)
+      return setError({
+        error: 'Sign in to add product to favorites!',
+        errorName: 'favorite-auth',
+      });
     if (!product) return;
     size
       ? addFavorite({
@@ -174,11 +186,16 @@ const Product = () => {
               </Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.button} onPress={addFavProduct}>
-              <Text style={styles.btnText}>
-                <Icon name={'favorite-border'} size={28} />
-              </Text>
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity style={styles.button} onPress={addFavProduct}>
+                <Text style={styles.btnText}>
+                  <Icon name={'favorite-border'} size={28} />
+                </Text>
+              </TouchableOpacity>
+              {error.errorName === 'favorite-auth' && (
+                <Text style={styles.error}>{error.error}</Text>
+              )}
+            </>
           )}
           <Text style={styles.descText}>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -197,7 +214,7 @@ const Product = () => {
           gender={product.gender}
           type={product.type}
           closeModal={() => setOpenedSizeModal(false)}
-          setSize={setSize}
+          handleSize={handleSize}
         />
       )}
     </>
