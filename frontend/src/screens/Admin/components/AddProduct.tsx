@@ -7,14 +7,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  Dropdown,
-  MultiSelect,
-  SelectCountry,
-} from 'react-native-element-dropdown';
 import {sizesGenders} from '../../../data/filterData';
 import DropdownComponent from './Dropdown';
 import MultiSelectComponent from './MultiSelect';
+import {
+  categoryOptions,
+  colorsOptions,
+  genderOptions,
+  sizeClothes,
+  typeOptions,
+} from '../../../data/optionsToAddProduct';
+import axios from '../../../axios';
 
 type dropdownType = {
   label: string;
@@ -23,12 +26,14 @@ type dropdownType = {
 type SelectedValues = {
   gender: dropdownType;
   type: dropdownType;
+  category: dropdownType;
 };
 
 const AddProduct = () => {
   const [selectedValues, setSelectedValues] = React.useState<SelectedValues>({
     gender: {label: '', value: ''},
     type: {label: '', value: ''},
+    category: {label: '', value: ''},
   });
   const [name, setName] = React.useState<string>('');
   const [colorsValue, setColorsValue] = React.useState<string[]>([]);
@@ -36,27 +41,6 @@ const AddProduct = () => {
   const [sizesValue, setSizesValue] = React.useState<string[]>([]);
   const [sizesData, setSizesData] = React.useState<dropdownType[]>([]);
   const [isFocused, setIsFocused] = React.useState<string>('');
-
-  const genderOptions = [
-    {label: 'Man', value: 'man'},
-    {label: 'Woman', value: 'woman'},
-    {label: 'Big kids', value: 'bigKids'},
-    {label: 'Small kids', value: 'smallKids'},
-  ];
-  const typeOptions = [
-    {label: 'Shoes', value: 'shoes'},
-    {label: 'Clothes', value: 'clothes'},
-  ];
-
-  const colorsOptions = [
-    {label: 'White', value: 'white'},
-    {label: 'Black', value: 'black'},
-    {label: 'Gray', value: 'gray'},
-    {label: 'Brown', value: 'brown'},
-    {label: 'Red', value: 'red'},
-    {label: 'Green', value: 'green'},
-    {label: 'Pink', value: 'pink'},
-  ];
 
   React.useEffect(() => {
     const {gender, type} = selectedValues;
@@ -82,13 +66,7 @@ const AddProduct = () => {
       }
     } else if (selectedValues.type.value === 'clothes') {
       setSizesValue(null as any);
-      return setSizesData([
-        {label: 'S', value: 'S'},
-        {label: 'M', value: 'M'},
-        {label: 'L', value: 'L'},
-        {label: 'XL', value: 'XL'},
-        {label: 'XL', value: 'XL'},
-      ]);
+      return setSizesData(sizeClothes);
     }
   };
 
@@ -106,6 +84,29 @@ const AddProduct = () => {
       gender: item,
     }));
     handleSizeOptions(item.value);
+  };
+
+  const handleCategoryChange = (item: dropdownType) => {
+    setSelectedValues(prevValues => ({
+      ...prevValues,
+      category: item,
+    }));
+  };
+
+  const addProduct = async () => {
+    try {
+      const res = await axios.post('add-product-db', {
+        gender: selectedValues.gender.value,
+        nameProduct: name,
+        colors: colorsValue,
+        price: price,
+        size: sizesValue,
+        type: selectedValues.type.value,
+        category: selectedValues.category.value,
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -130,6 +131,13 @@ const AddProduct = () => {
         value={selectedValues.type}
         onFocus={() => setIsFocused('type')}
         onChange={handleTypeChange}
+      />
+      <DropdownComponent
+        label="Category"
+        options={categoryOptions}
+        value={selectedValues.category}
+        onFocus={() => setIsFocused('category')}
+        onChange={handleCategoryChange}
       />
       <DropdownComponent
         label="Gender"
@@ -183,10 +191,12 @@ const AddProduct = () => {
           colorsValue?.length === 0 ||
           !price ||
           !selectedValues.type.value ||
-          !selectedValues.gender.value
+          !selectedValues.gender.value ||
+          !selectedValues.category.value
             ? true
             : false
-        }>
+        }
+        onPress={addProduct}>
         <Text style={styles.textBtn}>Add product</Text>
       </TouchableOpacity>
     </View>
@@ -228,6 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 0,
     paddingLeft: 6,
+    fontWeight: '600',
     backgroundColor: 'white',
   },
   button: {

@@ -141,6 +141,7 @@ class ProductController {
           colors: data.colors,
           price: data.price,
           size: data.size,
+          category: data.category,
           image: data.colors.map(
             (el) =>
               `${data.type}-${data.nameProduct
