@@ -97,33 +97,6 @@ class ProductController {
     }
   }
 
-  async getProduct(req, res) {
-    let products;
-    try {
-      if (req.body.type === "shoes") {
-        products = await Shoes.find({
-          // type: req.body.type,
-          $text: { $search: `"${req.body.text}"` },
-        });
-        return res.status(200).json({ products });
-      } else {
-        return res
-          .status(400)
-          .json({ message: "Can't find this type of products!" });
-      }
-    } catch (e) {
-      return res.status(400).json({ message: e.message });
-    }
-  }
-
-  async fetchAllProduct(req, res) {
-    try {
-      const products = await Shoes.find().limit(5);
-      return res.status(200).json({ products });
-    } catch (e) {
-      return res.status(402).json({ message: "Something went wrong" });
-    }
-  }
   async addProduct(req, res) {
     const data = req.body;
     let exist = await Shoes.findOne({
@@ -157,6 +130,15 @@ class ProductController {
       console.log("e", e);
       e.code === 11000 ? (e.message = "These shoes already exist!") : e.message;
       return res.status(401).json({ message: e.message });
+    }
+  }
+
+  async deleteProduct(req, res) {
+    try {
+      await Shoes.findByIdAndRemove(req.body.productId);
+      return res.status(200).json({ message: "The product has been removed" });
+    } catch (error) {
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 }

@@ -53,8 +53,6 @@ const AddProduct = () => {
     } else if (selectedValues.type.value === 'shoes') {
       if (genderValue === '') return 'Select gender';
       else {
-        console.log(genderValue);
-        console.log(sizesGenders['woman']);
         const transformedArray = sizesGenders[genderValue]?.map(
           (value: number) => ({
             value: value.toString(),
@@ -184,7 +182,17 @@ const AddProduct = () => {
         />
       )}
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          (sizesValue?.length === 0 ||
+            !sizesValue ||
+            colorsValue?.length === 0 ||
+            !price ||
+            !selectedValues.type.value ||
+            !selectedValues.gender.value ||
+            !selectedValues.category.value) &&
+            styles.buttonDisabled,
+        ]}
         disabled={
           sizesValue?.length === 0 ||
           !sizesValue ||
@@ -255,5 +263,8 @@ const styles = StyleSheet.create({
   textBtn: {
     fontSize: 17,
     color: 'white',
+  },
+  buttonDisabled: {
+    backgroundColor: 'rgba(160, 160, 160, 0.700)',
   },
 });
