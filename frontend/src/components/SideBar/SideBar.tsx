@@ -16,9 +16,11 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
 import {hambugerData} from '../../data/hamburgerData';
 import {useHamburgerContext} from '../../context/HamburgerContext';
+import {useAuthContext} from '../../context/AuthContext';
 
 export default function SideBar() {
   const {isOpenHamburger, setIsOpenHamburger} = useHamburgerContext();
+  const {user} = useAuthContext();
   const navigation: NavigationProp<ParamListBase> = useNavigation();
   const route = useRoute();
   const width = Dimensions.get('window').width * 0.65;
@@ -99,20 +101,22 @@ export default function SideBar() {
               <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
           ))}
-          <TouchableOpacity
-            onPress={() => {
-              setIsOpenHamburger(false);
-              navigation.navigate(`AdminPanel`);
-            }}
-            style={[
-              styles.option,
-              index === 0 && styles.optionFirstChild,
-              'AdminPanel' === route.name && {backgroundColor: '#d8d8d8ce'},
-            ]}
-            key={index}>
-            <Icon name={'md-key-outline'} size={28} color={'black'} />
-            <Text style={styles.text}>Admin panel</Text>
-          </TouchableOpacity>
+          {user?.admin ? (
+            <TouchableOpacity
+              onPress={() => {
+                setIsOpenHamburger(false);
+                navigation.navigate(`AdminPanel`);
+              }}
+              style={[
+                styles.option,
+                index === 0 && styles.optionFirstChild,
+                'AdminPanel' === route.name && {backgroundColor: '#d8d8d8ce'},
+              ]}
+              key={index}>
+              <Icon name={'md-key-outline'} size={28} color={'black'} />
+              <Text style={styles.text}>Admin panel</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </Animated.ScrollView>
     </>

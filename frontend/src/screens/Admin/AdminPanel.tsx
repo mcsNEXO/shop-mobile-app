@@ -21,7 +21,9 @@ const AdminPanel = () => {
         onPress={() => navigation.navigate('AddProduct')}>
         <Text style={styles.colorText}>Add product</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('DeleteProduct')}>
         <Text style={styles.colorText}>Delete product</Text>
       </TouchableOpacity>
     </View>

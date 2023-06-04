@@ -10,7 +10,6 @@ import {
 import React from 'react';
 import HeaderFavorite from '../../components/Headers/HeaderFavorite';
 import SideBar from '../../components/SideBar/SideBar';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {useFavoriteContext} from '../../context/FavoriteContext';
 import {IMAGENAME} from '../../assets/images/shoes/image';
 import {SvgXml} from 'react-native-svg';
@@ -18,18 +17,19 @@ import FavoritePopUp from './FavoritePopUp';
 import {emptyFavorite} from '../../assets/images/svg/img';
 import {useAuthContext} from '../../context/AuthContext';
 import NotLogged from '../../components/NotLogged/NotLogged';
+import Toast from 'react-native-toast-message';
+import {errorToast, successToast} from '../../helpers/toasts';
 
-type TypeNavigationProp = {
-  navigation: NavigationProp<ParamListBase>;
-};
-
-const Favorite = ({navigation}: TypeNavigationProp) => {
+const Favorite = () => {
   const {favorite} = useFavoriteContext();
   const {user} = useAuthContext();
   const [isOpen, setIsOpen] = React.useState<number>(-1);
 
   return (
     <>
+      <View style={{zIndex: 100}}>
+        <Toast />
+      </View>
       <SideBar />
       <HeaderFavorite />
       {user && favorite ? (
@@ -46,6 +46,12 @@ const Favorite = ({navigation}: TypeNavigationProp) => {
                       isOpen={isOpen}
                       setIsOpen={setIsOpen}
                       item={item}
+                      successToast={() =>
+                        successToast('Product has been added to cart')
+                      }
+                      errorToast={() =>
+                        errorToast('Product has been removed from favorites')
+                      }
                     />
                   )}
                   <TouchableOpacity

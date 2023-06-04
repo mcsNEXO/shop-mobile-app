@@ -42,9 +42,8 @@ router.post(
   "/get-search-product-names",
   productController.getSearchedNamesOfProducts
 );
-router.post("/get-search-product", productController.getProduct);
-router.get("/fetch-all-products", productController.fetchAllProduct);
 router.post("/add-product-db", productController.addProduct);
 router.post("/get-searched-products", productController.getSearchedProduct);
+router.post("/delete-product-db", productController.deleteProduct);
 
 module.exports = router;

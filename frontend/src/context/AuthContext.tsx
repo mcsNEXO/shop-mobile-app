@@ -18,6 +18,7 @@ type User = {
   firstName: string;
   lastName: string;
   image: string;
+  admin: boolean;
 };
 
 export const AuthContext = React.createContext<IContext>(null as any);

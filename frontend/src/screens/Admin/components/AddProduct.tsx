@@ -7,14 +7,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  Dropdown,
-  MultiSelect,
-  SelectCountry,
-} from 'react-native-element-dropdown';
 import {sizesGenders} from '../../../data/filterData';
 import DropdownComponent from './Dropdown';
 import MultiSelectComponent from './MultiSelect';
+import {
+  categoryOptions,
+  colorsOptions,
+  genderOptions,
+  sizeClothes,
+  typeOptions,
+} from '../../../data/optionsToAddProduct';
+import axios from '../../../axios';
+import Toast from 'react-native-toast-message';
+import {successToast} from '../../../helpers/toasts';
 
 type dropdownType = {
   label: string;
@@ -23,40 +28,21 @@ type dropdownType = {
 type SelectedValues = {
   gender: dropdownType;
   type: dropdownType;
+  category: dropdownType;
 };
 
 const AddProduct = () => {
   const [selectedValues, setSelectedValues] = React.useState<SelectedValues>({
     gender: {label: '', value: ''},
     type: {label: '', value: ''},
+    category: {label: '', value: ''},
   });
   const [name, setName] = React.useState<string>('');
   const [colorsValue, setColorsValue] = React.useState<string[]>([]);
-  const [price, setPrice] = React.useState<number>();
+  const [price, setPrice] = React.useState<number | ''>('');
   const [sizesValue, setSizesValue] = React.useState<string[]>([]);
   const [sizesData, setSizesData] = React.useState<dropdownType[]>([]);
   const [isFocused, setIsFocused] = React.useState<string>('');
-
-  const genderOptions = [
-    {label: 'Man', value: 'man'},
-    {label: 'Woman', value: 'woman'},
-    {label: 'Big kids', value: 'bigKids'},
-    {label: 'Small kids', value: 'smallKids'},
-  ];
-  const typeOptions = [
-    {label: 'Shoes', value: 'shoes'},
-    {label: 'Clothes', value: 'clothes'},
-  ];
-
-  const colorsOptions = [
-    {label: 'White', value: 'white'},
-    {label: 'Black', value: 'black'},
-    {label: 'Gray', value: 'gray'},
-    {label: 'Brown', value: 'brown'},
-    {label: 'Red', value: 'red'},
-    {label: 'Green', value: 'green'},
-    {label: 'Pink', value: 'pink'},
-  ];
 
   React.useEffect(() => {
     const {gender, type} = selectedValues;
@@ -69,8 +55,6 @@ const AddProduct = () => {
     } else if (selectedValues.type.value === 'shoes') {
       if (genderValue === '') return 'Select gender';
       else {
-        console.log(genderValue);
-        console.log(sizesGenders['woman']);
         const transformedArray = sizesGenders[genderValue]?.map(
           (value: number) => ({
             value: value.toString(),
@@ -82,13 +66,7 @@ const AddProduct = () => {
       }
     } else if (selectedValues.type.value === 'clothes') {
       setSizesValue(null as any);
-      return setSizesData([
-        {label: 'S', value: 'S'},
-        {label: 'M', value: 'M'},
-        {label: 'L', value: 'L'},
-        {label: 'XL', value: 'XL'},
-        {label: 'XL', value: 'XL'},
-      ]);
+      return setSizesData(sizeClothes);
     }
   };
 
@@ -108,8 +86,49 @@ const AddProduct = () => {
     handleSizeOptions(item.value);
   };
 
+  const handleCategoryChange = (item: dropdownType) => {
+    setSelectedValues(prevValues => ({
+      ...prevValues,
+      category: item,
+    }));
+  };
+
+  const clearInputs = () => {
+    setSelectedValues({
+      category: {label: '', value: ''},
+      gender: {label: '', value: ''},
+      type: {label: '', value: ''},
+    });
+    setName('');
+    setPrice('');
+    setColorsValue([]);
+    setSizesValue([]);
+    setSizesData([]);
+  };
+
+  const addProduct = async () => {
+    try {
+      const res = await axios.post('add-product-db', {
+        gender: selectedValues.gender.value,
+        nameProduct: name,
+        colors: colorsValue,
+        price: price,
+        size: sizesValue,
+        type: selectedValues.type.value,
+        category: selectedValues.category.value,
+      });
+      clearInputs();
+      successToast('Product has been added');
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <View>
+      <View style={{zIndex: 100}}>
+        <Toast />
+      </View>
       <Text style={styles.title}>Add new product</Text>
       <View style={styles.line} />
       <View style={styles.boxValue}>
@@ -119,6 +138,7 @@ const AddProduct = () => {
             styles.input,
             {borderColor: isFocused === 'name' ? 'blue' : 'gray'},
           ]}
+          value={name}
           onChangeText={val => setName(val)}
           onFocus={() => setIsFocused('name')}
           onBlur={() => setIsFocused('')}
@@ -130,6 +150,13 @@ const AddProduct = () => {
         value={selectedValues.type}
         onFocus={() => setIsFocused('type')}
         onChange={handleTypeChange}
+      />
+      <DropdownComponent
+        label="Category"
+        options={categoryOptions}
+        value={selectedValues.category}
+        onFocus={() => setIsFocused('category')}
+        onChange={handleCategoryChange}
       />
       <DropdownComponent
         label="Gender"
@@ -156,6 +183,7 @@ const AddProduct = () => {
           onBlur={() => setIsFocused('')}
           inputMode="numeric"
           onChangeText={val => setPrice(Number(val))}
+          value={String(price)}
         />
       </View>
 
@@ -176,17 +204,29 @@ const AddProduct = () => {
         />
       )}
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          (sizesValue?.length === 0 ||
+            !sizesValue ||
+            colorsValue?.length === 0 ||
+            !price ||
+            !selectedValues.type.value ||
+            !selectedValues.gender.value ||
+            !selectedValues.category.value) &&
+            styles.buttonDisabled,
+        ]}
         disabled={
           sizesValue?.length === 0 ||
           !sizesValue ||
           colorsValue?.length === 0 ||
           !price ||
           !selectedValues.type.value ||
-          !selectedValues.gender.value
+          !selectedValues.gender.value ||
+          !selectedValues.category.value
             ? true
             : false
-        }>
+        }
+        onPress={addProduct}>
         <Text style={styles.textBtn}>Add product</Text>
       </TouchableOpacity>
     </View>
@@ -228,6 +268,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 0,
     paddingLeft: 6,
+    fontWeight: '600',
     backgroundColor: 'white',
   },
   button: {
@@ -244,5 +285,8 @@ const styles = StyleSheet.create({
   textBtn: {
     fontSize: 17,
     color: 'white',
+  },
+  buttonDisabled: {
+    backgroundColor: 'rgba(160, 160, 160, 0.700)',
   },
 });

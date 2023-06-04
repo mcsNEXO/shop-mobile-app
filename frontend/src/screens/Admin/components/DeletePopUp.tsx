@@ -1,47 +1,37 @@
-import React from 'react';
 import {
+  Alert,
+  Animated,
   Dimensions,
+  Image,
   Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Animated,
-  Image,
-  FlatList,
 } from 'react-native';
-import {IMAGENAME} from '../../assets/images/shoes/image';
+import {IMAGENAME} from '../../../assets/images/shoes/image';
+import {OrdinaryProduct} from '../../../helpers/typesProducts';
+import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {sizesGenders} from '../../data/filterData';
+import axios from '../../../axios';
 import {
-  NavigationProp,
   ParamListBase,
   useNavigation,
+  NavigationProp,
 } from '@react-navigation/native';
-import {useFavoriteContext} from '../../context/FavoriteContext';
-import useCartHook from '../../hooks/useCart';
-import {ProductFavoriteType} from '../../context/FavoriteContext';
-import {ProductCartType} from '../../context/CartContext';
 
-const FavoritePopUp = ({
+const DeletePopUp = ({
   item,
   isOpen,
   setIsOpen,
-  successToast,
-  errorToast,
+  handleClear,
 }: {
-  item: ProductFavoriteType;
+  item: OrdinaryProduct;
   isOpen: number;
   setIsOpen: React.Dispatch<React.SetStateAction<number>>;
-  successToast: () => void;
-  errorToast: () => void;
+  handleClear: (id: string) => void;
 }) => {
-  //states
-  const [index, setIndex] = React.useState<number>(0);
   const [error, setError] = React.useState<string>('');
-  const [size, setSize] = React.useState<number | null>(
-    typeof item.size === 'number' ? item.size : null,
-  );
   const [animatedHeight, setAnimatedWidth] = React.useState(
     new Animated.Value(0),
   );
@@ -49,52 +39,12 @@ const FavoritePopUp = ({
     new Animated.Value(0),
   );
 
-  //hooks
   const navigation: NavigationProp<ParamListBase> = useNavigation();
-  const {deleteFavorite} = useFavoriteContext();
-  const {addProduct} = useCartHook();
 
-  //variables
-  const height = Dimensions.get('window').height * 0.5;
-
-  const handleSize = (size: number) => {
-    setSize(size);
-    setError('');
-  };
-
-  const handleMoveToProduct = (item: ProductFavoriteType) => {
-    setIsOpen(-1);
-    navigation.navigate('Product', {
-      title: item.name.charAt(0).toUpperCase() + item.name.slice(1),
-      productId: item._id,
-      color: item?.colors,
-    });
-  };
-
-  const handleAddProductToCart = (item: ProductFavoriteType) => {
-    if (!size) return setError('Select size!');
-    try {
-      addProduct({...item, size: size} as ProductCartType);
-      successToast();
-    } catch (e) {
-      console.log(e);
-    }
-    setIsOpen(-1);
-  };
-
-  const handleDeleteFavProduct = (item: ProductFavoriteType) => {
-    try {
-      deleteFavorite(item);
-      errorToast();
-    } catch (e) {
-      console.log(e);
-    }
-    setIsOpen(-1);
-  };
+  const height = Dimensions.get('window').height * 0.4;
 
   React.useEffect(() => {
     if (isOpen > -1) {
-      setIndex(1);
       Animated.parallel([
         Animated.timing(animatedHeight, {
           toValue: height,
@@ -119,20 +69,53 @@ const FavoritePopUp = ({
           duration: 300,
           useNativeDriver: false,
         }),
-      ]).start(() => {
-        setIsOpen(-1);
-        setIndex(0);
-      });
+      ]).start(() => setIsOpen(-1));
     }
   }, [isOpen]);
+
+  const handleDelete = async (item: OrdinaryProduct) => {
+    Alert.alert(
+      'Confirmation',
+      'Are you sure you want to delete this product?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const res = await axios.post('delete-product-db', {
+                productId: item._id,
+              });
+              setIsOpen(-1);
+              handleClear(item._id);
+            } catch (e) {
+              console.log(e);
+            }
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
+  const handleMoveToProduct = (item: OrdinaryProduct) => {
+    navigation.navigate('Product', {
+      title: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+      productId: item._id,
+      color: item?.colors[0],
+    });
+  };
 
   return (
     <Modal
       animationType="slide"
       visible={isOpen > -1 ? true : false}
       transparent={true}>
-      <Animated.View
-        style={[styles.bg, {opacity: isOpen > -1 ? 0.75 : 0, zIndex: index}]}>
+      <Animated.View style={[styles.bg, {opacity: isOpen > -1 ? 0.75 : 0}]}>
         <TouchableOpacity style={styles.touch} onPress={() => setIsOpen(-1)} />
       </Animated.View>
       <Animated.ScrollView
@@ -144,9 +127,7 @@ const FavoritePopUp = ({
           <View style={styles.firstPart}>
             <Image
               source={
-                IMAGENAME[item?.name?.split(' ').join('')][
-                  item.colors as string
-                ]
+                IMAGENAME[item?.name?.split(' ').join('')][item.colors[0]]
               }
               style={styles.image}
             />
@@ -169,25 +150,6 @@ const FavoritePopUp = ({
               {error}
             </Text>
           )}
-          <View style={styles.sizes}>
-            <FlatList
-              data={sizesGenders[item.gender]}
-              horizontal
-              renderItem={({item, index}) => (
-                <TouchableOpacity
-                  onPress={() => handleSize(item)}
-                  style={[
-                    styles.sizeBtn,
-                    {
-                      marginLeft: index === 0 ? 0 : 12,
-                      borderWidth: size === item ? 2 : 1,
-                    },
-                  ]}>
-                  <Text style={styles.textSize}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
           <View style={styles.secondPart}>
             <TouchableOpacity
               style={[styles.openBtn, styles.btn]}
@@ -195,13 +157,8 @@ const FavoritePopUp = ({
               <Icon name="open-in-new" size={24} color={'blue'} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.addBtn, styles.btn]}
-              onPress={() => handleAddProductToCart(item)}>
-              <Icon name="add-shopping-cart" size={24} color={'green'} />
-            </TouchableOpacity>
-            <TouchableOpacity
               style={[styles.deleteBtn, styles.btn]}
-              onPress={() => handleDeleteFavProduct(item)}>
+              onPress={() => handleDelete(item)}>
               <Icon name="delete-outline" size={24} color={'red'} />
             </TouchableOpacity>
           </View>
@@ -211,7 +168,7 @@ const FavoritePopUp = ({
   );
 };
 
-export default FavoritePopUp;
+export default DeletePopUp;
 
 const styles = StyleSheet.create({
   container: {

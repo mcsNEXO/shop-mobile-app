@@ -13,6 +13,21 @@ export type OrdinaryProduct = {
   _v: number;
 };
 
+export type ProductToDelete = {
+  _id: string;
+  type: string;
+  category: string;
+  name: string;
+  gender: string;
+  colors: string;
+  size: number[];
+  price: number;
+  quantity: number;
+  image: string[];
+  index: number;
+  _v: number;
+};
+
 export type ProductCartType = {
   _id: string;
   type: string;

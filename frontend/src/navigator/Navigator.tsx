@@ -17,6 +17,7 @@ import SearchProducts from '../screens/SearchProducts/SearchProducts';
 import HeaderRightProducts from '../components/Headers/HeaderRightProducts';
 import AdminPanel from '../screens/Admin/AdminPanel';
 import AddProduct from '../screens/Admin/components/AddProduct';
+import DeleteProduct from '../screens/Admin/components/DeleteProduct';
 
 const Stack = createNativeStackNavigator();
 const Navigator = () => {
@@ -138,6 +139,13 @@ const Navigator = () => {
           }}
           name={'AddProduct'}
           component={AddProduct}
+        />
+        <Stack.Screen
+          options={{
+            headerShown: true,
+          }}
+          name={'DeleteProduct'}
+          component={DeleteProduct}
         />
       </Stack.Navigator>
     </NavigationContainer>

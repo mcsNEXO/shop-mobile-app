@@ -23,6 +23,8 @@ import {IMAGENAME} from '../../assets/images/shoes/image';
 import {emptyCart} from '../../assets/images/svg/img';
 import {SvgXml} from 'react-native-svg';
 import {ProductCartType} from '../../context/CartContext';
+import Toast from 'react-native-toast-message';
+import {errorToast} from '../../helpers/toasts';
 
 type NavigationType = {
   navigation: NavigationProp<ParamListBase>;
@@ -99,22 +101,30 @@ const Cart = ({navigation}: NavigationType) => {
   };
 
   const deleteProduct = async (product: ProductCartType) => {
-    if (user) {
-      const res = await axios.post('delete-product', {
-        userId: user._id,
-        product: product,
-      });
-      setCartStorage(res.data.cart);
-    } else {
-      if (cart === null) return;
-      setCartStorage(
-        cart.filter(x => JSON.stringify(x) !== JSON.stringify(product)),
-      );
+    try {
+      if (user) {
+        const res = await axios.post('delete-product', {
+          userId: user._id,
+          product: product,
+        });
+        setCartStorage(res.data.cart);
+      } else {
+        if (cart === null) return;
+        setCartStorage(
+          cart.filter(x => JSON.stringify(x) !== JSON.stringify(product)),
+        );
+      }
+      errorToast('Product has been removed from cart');
+    } catch (e) {
+      console.log(e);
     }
   };
 
   return (
     <>
+      <View style={{zIndex: 100}}>
+        <Toast />
+      </View>
       <SideBar />
       <HeaderCart />
       <ScrollView>
