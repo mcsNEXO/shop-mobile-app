@@ -27,10 +27,14 @@ const FavoritePopUp = ({
   item,
   isOpen,
   setIsOpen,
+  successToast,
+  errorToast,
 }: {
   item: ProductFavoriteType;
   isOpen: number;
   setIsOpen: React.Dispatch<React.SetStateAction<number>>;
+  successToast: () => void;
+  errorToast: () => void;
 }) => {
   //states
   const [index, setIndex] = React.useState<number>(0);
@@ -69,12 +73,22 @@ const FavoritePopUp = ({
 
   const handleAddProductToCart = (item: ProductFavoriteType) => {
     if (!size) return setError('Select size!');
-    addProduct({...item, size: size} as ProductCartType);
+    try {
+      addProduct({...item, size: size} as ProductCartType);
+      successToast();
+    } catch (e) {
+      console.log(e);
+    }
     setIsOpen(-1);
   };
 
   const handleDeleteFavProduct = (item: ProductFavoriteType) => {
-    deleteFavorite(item);
+    try {
+      deleteFavorite(item);
+      errorToast();
+    } catch (e) {
+      console.log(e);
+    }
     setIsOpen(-1);
   };
 

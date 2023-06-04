@@ -5,6 +5,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  View,
 } from 'react-native';
 import {IMAGENAME} from '../../../../../../assets/images/shoes/image';
 import axios from '../../../../../../axios';
@@ -21,6 +22,8 @@ import useCartHook from '../../../../../../hooks/useCart';
 import {useFavoriteContext} from '../../../../../../context/FavoriteContext';
 import {OrdinaryProduct} from '../../../../../../helpers/typesProducts';
 import {useAuthContext} from '../../../../../../context/AuthContext';
+import {errorToast, successToast} from '../../../../../../helpers/toasts';
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
 type errorType = {
   error: string;
@@ -72,47 +75,63 @@ const Product = () => {
         errorName: 'favorite-auth',
       });
     if (!product) return;
-    size
-      ? addFavorite({
-          ...product,
-          colors: route.params.color,
-          image: product.image
-            ?.filter(x => x.includes(route.params.color))
-            .toString(),
-          size: size,
-        })
-      : addFavorite({
-          ...product,
-          image: product.image
-            ?.filter(x => x.includes(route.params.color))
-            .toString(),
-          colors: route.params.color,
-        });
+    try {
+      size
+        ? addFavorite({
+            ...product,
+            colors: route.params.color,
+            image: product.image
+              ?.filter(x => x.includes(route.params.color))
+              .toString(),
+            size: size,
+          })
+        : addFavorite({
+            ...product,
+            image: product.image
+              ?.filter(x => x.includes(route.params.color))
+              .toString(),
+            colors: route.params.color,
+          });
+      successToast('Product has been added to favorites');
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const deleteFavProduct = () => {
     if (!product) return;
-    deleteFavorite({
-      ...product,
-      image: product.image
-        ?.filter(x => x.includes(route.params.color))
-        .toString(),
-      colors: route.params.color,
-    });
+    try {
+      deleteFavorite({
+        ...product,
+        image: product.image
+          ?.filter(x => x.includes(route.params.color))
+          .toString(),
+        colors: route.params.color,
+      });
+      errorToast('Product has been removed from favorites');
+    } catch (e) {}
   };
 
   const handleAddToCart = (product: any) => {
     if (!product || !size)
       return setError({error: 'Select size!', errorName: 'size'});
-    addProduct({
-      ...product,
-      colors: route.params.color,
-      size: size,
-    });
+    try {
+      addProduct({
+        ...product,
+        colors: route.params.color,
+        size: size,
+      });
+      successToast('Product has been added to cart');
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
     <>
+      <View style={{zIndex: 100}}>
+        <Toast />
+      </View>
       <ScrollView style={styles.container}>
         {product && (
           <Image

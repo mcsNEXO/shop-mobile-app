@@ -18,6 +18,8 @@ import {
   typeOptions,
 } from '../../../data/optionsToAddProduct';
 import axios from '../../../axios';
+import Toast from 'react-native-toast-message';
+import {successToast} from '../../../helpers/toasts';
 
 type dropdownType = {
   label: string;
@@ -37,7 +39,7 @@ const AddProduct = () => {
   });
   const [name, setName] = React.useState<string>('');
   const [colorsValue, setColorsValue] = React.useState<string[]>([]);
-  const [price, setPrice] = React.useState<number>();
+  const [price, setPrice] = React.useState<number | ''>('');
   const [sizesValue, setSizesValue] = React.useState<string[]>([]);
   const [sizesData, setSizesData] = React.useState<dropdownType[]>([]);
   const [isFocused, setIsFocused] = React.useState<string>('');
@@ -91,6 +93,19 @@ const AddProduct = () => {
     }));
   };
 
+  const clearInputs = () => {
+    setSelectedValues({
+      category: {label: '', value: ''},
+      gender: {label: '', value: ''},
+      type: {label: '', value: ''},
+    });
+    setName('');
+    setPrice('');
+    setColorsValue([]);
+    setSizesValue([]);
+    setSizesData([]);
+  };
+
   const addProduct = async () => {
     try {
       const res = await axios.post('add-product-db', {
@@ -102,6 +117,8 @@ const AddProduct = () => {
         type: selectedValues.type.value,
         category: selectedValues.category.value,
       });
+      clearInputs();
+      successToast('Product has been added');
     } catch (e) {
       console.log(e);
     }
@@ -109,6 +126,9 @@ const AddProduct = () => {
 
   return (
     <View>
+      <View style={{zIndex: 100}}>
+        <Toast />
+      </View>
       <Text style={styles.title}>Add new product</Text>
       <View style={styles.line} />
       <View style={styles.boxValue}>
@@ -118,6 +138,7 @@ const AddProduct = () => {
             styles.input,
             {borderColor: isFocused === 'name' ? 'blue' : 'gray'},
           ]}
+          value={name}
           onChangeText={val => setName(val)}
           onFocus={() => setIsFocused('name')}
           onBlur={() => setIsFocused('')}
@@ -162,6 +183,7 @@ const AddProduct = () => {
           onBlur={() => setIsFocused('')}
           inputMode="numeric"
           onChangeText={val => setPrice(Number(val))}
+          value={String(price)}
         />
       </View>
 

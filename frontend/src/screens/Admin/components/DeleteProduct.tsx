@@ -21,6 +21,8 @@ import {OrdinaryProduct} from '../../../helpers/typesProducts';
 import {IMAGENAME} from '../../../assets/images/shoes/image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DeletePopUp from './DeletePopUp';
+import Toast from 'react-native-toast-message';
+import {errorToast} from '../../../helpers/toasts';
 
 type dropdownType = {
   label: string;
@@ -109,105 +111,111 @@ const DeleteProduct = () => {
       gender: {label: '', value: ''},
       type: {label: '', value: ''},
     });
+    errorToast('Product has been deleted');
   };
 
   return (
-    <View style={{flex: 1}}>
-      <TouchableOpacity
-        style={styles.buttonToggle}
-        onPress={() => setIsOpenSearchElement(!isOpenSearchElement)}>
-        <Icon
-          name={
-            isOpenSearchElement ? 'keyboard-arrow-up' : 'keyboard-arrow-down'
-          }
-          size={20}
-          color={'black'}
-        />
-      </TouchableOpacity>
-      <Animated.View style={{height: searchElementHeight}}>
-        <Text style={styles.title}>Delete product</Text>
-        <View style={styles.line} />
-        <View style={styles.boxValue}>
-          <Text style={styles.name}>Name: </Text>
-          <TextInput
-            style={[
-              styles.input,
-              {borderColor: isFocused === 'name' ? 'blue' : 'gray'},
-            ]}
-            onChangeText={val => setName(val)}
-            onFocus={() => setIsFocused('name')}
-            onBlur={() => setIsFocused('')}
-          />
-        </View>
-        <DropdownComponent
-          label="Type"
-          options={typeOptions}
-          value={selectedValues.type}
-          onFocus={() => setIsFocused('type')}
-          onChange={item => handleValueChange(item, 'type')}
-        />
-        <DropdownComponent
-          label="Category"
-          options={categoryOptions}
-          value={selectedValues.category}
-          onFocus={() => setIsFocused('category')}
-          onChange={item => handleValueChange(item, 'type')}
-        />
-        <DropdownComponent
-          label="Gender"
-          options={genderOptions}
-          value={selectedValues.gender}
-          onFocus={() => setIsFocused('gender')}
-          onChange={item => handleValueChange(item, 'type')}
-        />
-        <TouchableOpacity style={styles.button} onPress={findProducts}>
-          <Text style={styles.textBtn}>Search products</Text>
-        </TouchableOpacity>
-      </Animated.View>
-
-      <View style={styles.container}>
-        {products?.length !== 0 && (
-          <FlatList
-            numColumns={2}
-            data={products}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({item, index}) => {
-              return (
-                <>
-                  {index === isOpen && (
-                    <DeletePopUp
-                      isOpen={isOpen}
-                      setIsOpen={setIsOpen}
-                      item={item}
-                      handleClear={handleClear}
-                    />
-                  )}
-                  <TouchableOpacity
-                    style={getStyles(index, products?.length)}
-                    onPress={() => setIsOpen(index)}>
-                    <Image
-                      source={
-                        IMAGENAME[item.name.replace(/\s/g, '')][
-                          item.colors[item.index]
-                        ]
-                      }
-                      style={styles.image}
-                    />
-                    <View style={styles.desc}>
-                      <Text style={styles.text}>{item.name}</Text>
-                      <Text
-                        style={
-                          styles.textGender
-                        }>{`${item.gender}'s ${item.type}`}</Text>
-                    </View>
-                  </TouchableOpacity>
-                </>
-              );
-            }}
-          />
-        )}
+    <>
+      <View style={{zIndex: 100}}>
+        <Toast />
       </View>
-    </View>
+      <View style={{flex: 1}}>
+        <TouchableOpacity
+          style={styles.buttonToggle}
+          onPress={() => setIsOpenSearchElement(!isOpenSearchElement)}>
+          <Icon
+            name={
+              isOpenSearchElement ? 'keyboard-arrow-up' : 'keyboard-arrow-down'
+            }
+            size={20}
+            color={'black'}
+          />
+        </TouchableOpacity>
+        <Animated.View style={{height: searchElementHeight}}>
+          <Text style={styles.title}>Delete product</Text>
+          <View style={styles.line} />
+          <View style={styles.boxValue}>
+            <Text style={styles.name}>Name: </Text>
+            <TextInput
+              style={[
+                styles.input,
+                {borderColor: isFocused === 'name' ? 'blue' : 'gray'},
+              ]}
+              onChangeText={val => setName(val)}
+              onFocus={() => setIsFocused('name')}
+              onBlur={() => setIsFocused('')}
+            />
+          </View>
+          <DropdownComponent
+            label="Type"
+            options={typeOptions}
+            value={selectedValues.type}
+            onFocus={() => setIsFocused('type')}
+            onChange={item => handleValueChange(item, 'type')}
+          />
+          <DropdownComponent
+            label="Category"
+            options={categoryOptions}
+            value={selectedValues.category}
+            onFocus={() => setIsFocused('category')}
+            onChange={item => handleValueChange(item, 'type')}
+          />
+          <DropdownComponent
+            label="Gender"
+            options={genderOptions}
+            value={selectedValues.gender}
+            onFocus={() => setIsFocused('gender')}
+            onChange={item => handleValueChange(item, 'type')}
+          />
+          <TouchableOpacity style={styles.button} onPress={findProducts}>
+            <Text style={styles.textBtn}>Search products</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <View style={styles.container}>
+          {products?.length !== 0 && (
+            <FlatList
+              numColumns={2}
+              data={products}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({item, index}) => {
+                return (
+                  <>
+                    {index === isOpen && (
+                      <DeletePopUp
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                        item={item}
+                        handleClear={handleClear}
+                      />
+                    )}
+                    <TouchableOpacity
+                      style={getStyles(index, products?.length)}
+                      onPress={() => setIsOpen(index)}>
+                      <Image
+                        source={
+                          IMAGENAME[item.name.replace(/\s/g, '')][
+                            item.colors[item.index]
+                          ]
+                        }
+                        style={styles.image}
+                      />
+                      <View style={styles.desc}>
+                        <Text style={styles.text}>{item.name}</Text>
+                        <Text
+                          style={
+                            styles.textGender
+                          }>{`${item.gender}'s ${item.type}`}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </>
+                );
+              }}
+            />
+          )}
+        </View>
+      </View>
+    </>
   );
 };
 
