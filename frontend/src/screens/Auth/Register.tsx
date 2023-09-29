@@ -121,6 +121,7 @@ const Register = ({navigation}: LoginProps) => {
     };
     try {
       const res = await axios.post('sign-up', data);
+      navigation.navigate('Login');
     } catch (err: any) {
       const errMessage = err?.response?.data?.message?.message;
       if (err?.response?.data?.message?.type === 'email') {

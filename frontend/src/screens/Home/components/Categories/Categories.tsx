@@ -18,7 +18,6 @@ const Categories = () => {
   const type = categoryData?.categoryList?.find(
     e => e?.name === category,
   )?.children;
-  const [opened, setOpened] = React.useState<boolean>(false);
 
   return (
     <>

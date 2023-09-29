@@ -1,4 +1,7 @@
+const config = require("../../config");
 const User = require("../../db/models/user");
+const jwt = require("jsonwebtoken");
+const session = require("express-session");
 const fs = require("fs");
 class UserController {
   async register(req, res) {
@@ -10,17 +13,13 @@ class UserController {
     });
     try {
       await user.save();
-      return res.status(200).json({ user });
     } catch (e) {
-      let type = "";
       if (e.code === 11000) {
         e.message = "This email exist";
-        type = "email";
       }
-      return res
-        .status(401)
-        .json({ message: { message: e.message, type: type } });
+      return res.status(401).json({ message: [e.message] });
     }
+    return res.status(200).json({ user });
   }
 
   async login(req, res) {
@@ -33,11 +32,23 @@ class UserController {
       if (!isValidPassword) {
         return res.status(401).send({ message: "Invalid Email or Password" });
       }
-      const token = user.generateAuthToken(user._id);
-
-      return res.status(200).json({ user: user, token });
+      console.log("before", req.session);
+      req.session.isAuthenticated = true;
+      console.log("after", req.session);
+      return res.status(200).json({ user });
     } catch (e) {
+      console.log(e);
       return res.status(401).json({ message: [e.message] });
+    }
+  }
+
+  async logout(req, res) {
+    try {
+      console.log(req.session);
+      req.session.destroy();
+      return res.status(200).json({ message: "Logged" });
+    } catch (e) {
+      return res.status(400).json(e);
     }
   }
 
@@ -45,19 +56,11 @@ class UserController {
     const user = await User.findById(req.body._id);
     user.email = req.body.email;
     user.firstName = req.body.firstName;
-    user.lastName = req.body.lastName;
     try {
       await user.save();
       return res.status(200).json({ user: user });
     } catch (e) {
-      let type = "";
-      if (e.code === 11000) {
-        e.message = "This email exist";
-        type = "email";
-      }
-      return res
-        .status(402)
-        .json({ message: { message: e.message, type: type } });
+      return res.status(402).json({ message: [e.message] });
     }
   }
 
@@ -89,7 +92,6 @@ class UserController {
       res.status(402).json({ message: e.message });
     }
   }
-
   async saveImage(req, res) {
     const user = await User.findById(req.body._id);
     if (req.body?.userImage) {
@@ -101,19 +103,6 @@ class UserController {
     await user.save();
     return res.status(200).json({ user });
   }
-
-  async saveImageMobile(req, res) {
-    const user = await User.findById(req.body._id);
-    if (req.body?.avatar) {
-      if (req.body.avatar !== "avatar.png") {
-        fs.unlinkSync("../frontend/public/uploads/" + req.body.avatar);
-      }
-    }
-    user.image = req.file.filename;
-    await user.save();
-    return res.status(200).json({ user });
-  }
-
   async cancelUpload(req, res) {
     const user = await User.findById(req.body._id);
     if (user.image === req.body.pathImage.split("/")[2]) {

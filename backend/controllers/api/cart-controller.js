@@ -1,114 +1,241 @@
 const Cart = require("../../db/models/cart");
+const Product = require("../../db/models/product");
 const Favorite = require("../../db/models/favorite");
 
 class CartController {
+  async getUserProducts(req, res) {
+    try {
+      let type = req.body.type;
+      const userProducts =
+        type === "favorite"
+          ? await Favorite.findOne({
+              user: req.body.userId,
+            }).populate("products.productId")
+          : await Cart.findOne({
+              user: req.body.userId,
+            }).populate("products.productId");
+
+      const products = userProducts?.products?.map((mappedProduct) => {
+        const { productId, color, size, quantity } = mappedProduct;
+        let currentColorObj = productId?.colors?.find(
+          (item) => item.color === color
+        );
+        if (type === "cart") {
+          currentColorObj.sizes = currentColorObj?.sizes?.find(
+            (item) => Number(item.size) === Number(size)
+          );
+        }
+
+        return {
+          size,
+          quantity: quantity && quantity,
+          product: {
+            _id: productId._id,
+            name: productId.name,
+            gender: productId.gender,
+            type: productId.type,
+            category: productId.category,
+            price: productId.price,
+            colors: currentColorObj,
+            description: productId.description,
+            createdAt: productId.createdAt,
+            updatedAt: productId.updatedAt,
+          },
+        };
+      });
+      return res.status(200).json({ products });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ message: "Problems" });
+    }
+  }
+
   async addProdcut(req, res) {
     let type = req.body.type;
-    //this is a variable that tells which function will be called
-    let userData = "";
+    let userData;
     if (type === "cart") {
-      userData = await Cart.findOne({ user: req.body.userId });
+      userData = await Cart.findOne({ user: req.body.product.userId });
     } else if (type === "favorite") {
-      userData = await Favorite.findOne({ user: req.body.userId });
+      userData = await Favorite.findOne({ user: req.body.product.userId });
     } else {
       return res.status(400).json({ message: "Wrong type" });
     }
 
-    const products = req.body.product ? [req.body.product] : req.body.cart;
+    const { productId, userId, color, size, quantity } = req.body.product;
+    if (userData?.user) {
+      const exist =
+        type === "cart"
+          ? userData.products?.find(
+              (x) =>
+                x.productId.toString() === productId &&
+                x.color === color &&
+                Number(x.size) === Number(size)
+            )
+          : userData.products?.find(
+              (x) => x.productId === productId && x.color === color
+            );
 
-    for (let i = 0; i < products?.length; i++) {
-      let product = products[i];
-      if (userData?.user && userData.user !== null) {
-        const exist = userData.products?.find(
-          (x) =>
-            x._id === product._id &&
-            x.colors === product.colors &&
-            x.size === product.size
+      if (exist) {
+        if (type === "favorite")
+          return res
+            .status(400)
+            .json({ message: "You have this product already" });
+        userData.products = userData?.products.map((productCart) =>
+          String(productCart.productId) === productId &&
+          Number(productCart.size) === Number(size)
+            ? {
+                ...productCart,
+                quantity:
+                  productCart.quantity + quantity < 10
+                    ? productCart.quantity + quantity
+                    : 10,
+              }
+            : productCart
         );
-        if (exist) {
-          const newCart = userData?.products.map((x) =>
-            x._id === product._id && x.size === product.size
-              ? {
-                  ...x,
-                  quantity:
-                    product.quantity > 1
-                      ? x.quantity + product.quantity
-                      : x.quantity + 1,
-                }
-              : x
-          );
-          newCart.filter((x) =>
-            x.quantity > 10 ? (x.quantity = 10) : x.quantity
-          );
-          userData.products = newCart;
-          try {
-            await userData.save();
-            res.status(200).json({ cart: userData?.products });
-          } catch (e) {}
-        } else {
-          const items = [...userData.products, { ...product, quantity: 1 }];
-          userData.products = items;
-          try {
-            await userData.save();
-            res.status(200).json({ cart: userData?.products });
-          } catch (e) {
-            return res.status(400).json({ message: e.message });
-          }
+        try {
+          await userData.save();
+          return res.status(200).json({
+            message: "Product has been added to cart",
+            products: userData.products,
+          });
+        } catch (err) {
+          console.log(err);
         }
       } else {
-        let newUserData;
-        if (type === "cart") {
-          newUserData = new Cart({
-            user: req.body.userId,
-            products: { ...req.body.product, quantity: 1 },
-          });
-        } else if (type === "favorite") {
-          newUserData = new Favorite({
-            user: req.body.userId,
-            products: { ...req.body.product, quantity: 1 },
-          });
-        }
+        const newProduct =
+          type === "cart"
+            ? {
+                productId: productId,
+                color: color,
+                size: size,
+                quantity: 1,
+              }
+            : {
+                productId: productId,
+                color: color,
+                size: size,
+              };
         try {
-          await newUserData.save();
-          return res.status(200).json({ cart: newUserData.products });
+          userData.products.push(newProduct);
+          await userData.save();
+          return res.status(200).json({
+            message: "Products has been added to favorites",
+            products: userData.products,
+          });
         } catch (e) {
-          res.status(402).json((e.message = "Something went wrong"));
+          console.log(e);
+          return res.status(400).json({ message: e.message });
         }
+      }
+    } else {
+      let newTypeProduct;
+      if (req.body.type === "cart") {
+        newTypeProduct = await Cart.create({
+          products: {
+            productId: productId,
+            color: color,
+            size: size,
+            quantity: 1,
+          },
+          user: userId,
+        });
+      } else if (req.body.type === "favorite") {
+        newTypeProduct = await Favorite.create({
+          products: {
+            productId: productId,
+            color: color,
+            size: size,
+          },
+          user: userId,
+        });
+      }
+      try {
+        await newTypeProduct.save();
+        return res.status(200).json({
+          message: "Product has been added to favorites",
+          products: newTypeProduct.products,
+        });
+      } catch (err) {
+        return res.status(400).json({ message: "Problems" });
       }
     }
   }
 
+  async getProductsCartNotLoggedUser(req, res) {
+    const resultArray = [];
+    for (const item of req.body.products) {
+      const productId = item.productId;
+      const product = await Product.findOne({ _id: productId });
+      const { color, size, quantity } = item;
+      let currentColorObj = product.colors.find((item) => item.color === color);
+      currentColorObj.sizes = currentColorObj.sizes?.find(
+        (item) => Number(item.size) === Number(size)
+      );
+      if (product) {
+        resultArray.push({
+          size,
+          quantity: quantity && quantity,
+          product: {
+            _id: product._id,
+            name: product.name,
+            gender: product.gender,
+            type: product.type,
+            category: product.category,
+            price: product.price,
+            colors: currentColorObj,
+            description: product.description,
+            createdAt: product.createdAt,
+            updatedAt: product.updatedAt,
+          },
+        });
+      } else {
+        console.log(`Nie znaleziono produktu o ID: ${productId}`);
+      }
+    }
+    return res.status(200).json({ products: resultArray });
+  }
+
   async deleteProduct(req, res) {
+    console.log("auth", req.session);
     const userCart = await Cart.findOne({ user: req.body.userId });
-    const deletedProduct = req.body.product;
     userCart.products = userCart.products.filter(
-      (x) => JSON.stringify(x) !== JSON.stringify(deletedProduct)
+      (x) =>
+        JSON.stringify(x) !==
+        JSON.stringify({ ...req.body.product, _id: x._id })
     );
     try {
       await userCart.save();
-      res.status(200).json({ cart: userCart.products });
-    } catch (e) {}
+      return res.status(200).json({ products: userCart.products });
+    } catch (e) {
+      return res.status(400).json({ message: "Problems" });
+    }
   }
 
-  async updateProduct(req, res) {
+  async updateQuantityProduct(req, res) {
     const userCart = await Cart.findOne({ user: req.body.userId });
     const updatedProduct = req.body.product;
     userCart.products = userCart.products.map((x) =>
-      x._id === updatedProduct._id &&
+      x.productId.toString() === updatedProduct.productId &&
       x.color === updatedProduct.color &&
       x.size === updatedProduct.size
-        ? { ...x, quantity: Number(req.body.quantity) }
+        ? { ...x, quantity: Number(updatedProduct.quantity) }
         : x
     );
     try {
       await userCart.save();
-      res.status(200).json({ cart: userCart.products });
-    } catch (e) {}
+      return res.status(200).json({ products: userCart.products });
+    } catch (e) {
+      return res.status(400).json({ message: "Problems" });
+    }
   }
 
   async getProduct(req, res) {
-    const userCart = await Cart.findOne({ user: req.body.userId });
-    res.status(200).json({ cart: userCart?.products ?? [] });
+    try {
+      const userCart = await Cart.findOne({ user: req.body.userId });
+      return res.status(200).json({ products: userCart?.products });
+    } catch (e) {
+      return res.status(400).json({ message: "Problems" });
+    }
   }
   async getFavProduct(req, res) {
     const userFav = await Favorite.findOne({ user: req.body.userId });
@@ -119,14 +246,14 @@ class CartController {
     const userCart = await Favorite.findOne({ user: req.body.userId });
     userCart.products = userCart.products.filter(
       (x) =>
-        JSON.stringify({ ...x, size: 0 }) !==
-        JSON.stringify({ ...req.body.product, quantity: 1, size: 0 })
+        JSON.stringify(x) !==
+        JSON.stringify({ ...req.body.product, size: x.size, _id: x._id })
     );
     try {
       await userCart.save();
-      res.status(200).json({ newFavorites: userCart.products });
+      return res.status(200).json({ products: userCart.products });
     } catch (e) {
-      res.statu(400).json((e.message = "Something wen wrong!"));
+      return res.statu(400).json((e.message = "Something wen wrong!"));
     }
   }
 }

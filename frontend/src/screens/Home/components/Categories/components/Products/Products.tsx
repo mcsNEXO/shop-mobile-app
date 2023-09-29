@@ -65,9 +65,11 @@ const Products = () => {
         gender: [
           route?.params.gender ? route?.params.gender.toLowerCase() : null,
         ],
+        colors: null,
         inputText: route.params?.inputText ?? null,
       };
-      const res = await axios.post('get-searched-products', data);
+      const res = await axios.post('get-shoes', data);
+      console.log(res.data);
       setProducts(res.data.products);
     } catch (err) {
       console.log(err);

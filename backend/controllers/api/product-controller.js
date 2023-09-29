@@ -1,95 +1,68 @@
-const Shoes = require("../../db/models/shoes");
 const searchProducts = require("../../functions/searchProductByName");
 
+const Product = require("../../db/models/product");
 class ProductController {
   async fetchProduct(req, res) {
     try {
-      const product = await Shoes.findOne({ _id: req.body.productId });
+      const product = await Product.findOne({
+        _id: req.body.idProduct,
+      });
       return res.status(200).json({ product });
     } catch (e) {
       return res.status(402).json({ message: "Cannot find this product" });
     }
   }
-  async getSearchedNamesOfProducts(req, res) {
-    const inputString = req.body.inputText;
-    let products;
+  async fetchAllProduct(req, res) {
     try {
-      if (inputString)
-        products = await Shoes.find(
-          { name: { $regex: inputString } },
-          { name: 1 }
-        );
-      else products = await Shoes.find({}, { name: 1 });
+      const products = await Product.find().limit(5);
       return res.status(200).json({ products });
-    } catch (error) {
-      return res.status(500).json({ error: "Internal server error" });
+    } catch (e) {
+      return res.status(402).json({ message: "Something went wrong" });
     }
   }
+
   async getSearchedProduct(req, res) {
-    const params = { ...req.body };
+    const sortingData = { ...req.body };
     const obj = new Object();
-    if (params.sort) obj[params.sort.value] = params.sort.sort;
+    if (sortingData.sort) obj[sortingData.sort.value] = sortingData.sort.sort;
+    console.log(sortingData);
     let products;
     try {
-      products = await Shoes.aggregate([
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            type: 1,
-            colors: params?.colors
-              ? {
-                  $setIntersection: ["$colors", params.colors],
-                }
-              : 1,
-            price: 1,
-            image: 1,
-            size: params.size
-              ? {
-                  $setIntersection: [
-                    "$size",
-                    params.size?.split(",")?.map((el) => parseInt(el)),
-                  ],
-                }
-              : 1,
-            image: 1,
-            gender: 1,
-            category: 1,
-            index: 1,
-            date: 1,
-          },
-        },
+      products = await Product.aggregate([
         {
           $match: {
-            "colors.0": {
-              $exists: true,
-            },
-            "size.0": {
-              $exists: true,
-            },
-            gender:
-              params.gender.length > 0 && params.gender[0] !== null
-                ? {
-                    $in: params.gender,
-                  }
-                : { $exists: true },
-            category: params.category ? params.category : { $exists: true },
-            type: params.type ? params.type : { $exists: true },
-            price: params.price
-              ? {
-                  $gt: Number(params?.price.split("-")[0]),
-                  $lt: Number(params.price.split("-")[1]),
-                }
-              : { $exists: true },
-            // name: params.inputText ?  { $regex: `.*${params.inputText}.*`, $options: "i" } : {exists:true},
+            $and: [
+              {
+                gender: sortingData?.gender
+                  ? sortingData?.gender
+                  : { $exists: true },
+              },
+              {
+                type: sortingData?.type ? sortingData?.type : { $exists: true },
+              },
+              {
+                category: sortingData?.category
+                  ? sortingData?.category
+                  : { $exists: true },
+              },
+            ],
           },
         },
         {
-          $sort: params.sort ? obj : { date: 1 },
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            gender: { $first: "$gender" },
+            type: { $first: "$type" },
+            category: { $first: "$category" },
+            price: { $first: "$price" },
+            colors: { $first: "$colors" },
+          },
         },
       ]);
-      if (params.inputText) {
-        products = searchProducts(params.inputText, products);
+      console.log(products);
+      if (sortingData.inputText) {
+        products = searchProducts(sortingData.inputText, products);
       }
       return res.status(200).json({ products });
     } catch (err) {
@@ -99,46 +72,36 @@ class ProductController {
 
   async addProduct(req, res) {
     const data = req.body;
-    let exist = await Shoes.findOne({
-      name: data.nameProduct.toLowerCase().trim(),
-      gender: data.gender,
-    });
-    if (exist) {
-      return res.status(401).json({ message: "These shoes already exist!" });
-    }
+    // let exist = await Product.findOne({
+    // name: data.nameProduct.toLowerCase().trim(),
+    // gender: data.gender,
+    // });
+    // if (exist) {
+    //   return res.status(401).json({ message: "These shoes already exist!" });
+    // }
     try {
-      if (data.type === "shoes") {
-        const newShoes = new Shoes({
-          gender: data.gender,
-          name: data.nameProduct,
-          colors: data.colors,
-          price: data.price,
-          size: data.size,
-          category: data.category,
-          image: data.colors.map(
-            (el) =>
-              `${data.type}-${data.nameProduct
-                .trim()
-                .replace(/ /g, "-")}-${el}.png`
-          ),
-          type: data.type,
-        });
-        await newShoes.save();
-      }
+      const product = new Product({
+        name: data.name,
+        type: data.type,
+        category: data.category,
+        gender: data.gender,
+        price: data.price,
+        colors: data.size.map((item) => {
+          return {
+            ...item,
+            image: `${data.type}-${data.name.trim().replace(/ /g, "-")}-${
+              item.color
+            }.png`,
+          };
+        }),
+        description: data.description,
+      });
+      await product.save();
       return res.status(200).json({ message: "ok" });
     } catch (e) {
       console.log("e", e);
       e.code === 11000 ? (e.message = "These shoes already exist!") : e.message;
       return res.status(401).json({ message: e.message });
-    }
-  }
-
-  async deleteProduct(req, res) {
-    try {
-      await Shoes.findByIdAndRemove(req.body.productId);
-      return res.status(200).json({ message: "The product has been removed" });
-    } catch (error) {
-      return res.status(500).json({ error: "Internal server error" });
     }
   }
 }

@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/api/user-controller");
+const shoesController = require("../controllers/api/shoes-controller");
 const promoCodeController = require("../controllers/api/promo-code-controller");
 const productController = require("../controllers/api/product-controller");
 const cartController = require("../controllers/api/cart-controller");
+const orderController = require("../controllers/api/order-controller");
 const path = require("path");
 const multer = require("multer");
+const authenticateToken = require("../middlewares/verify-token-middleware");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -22,28 +25,36 @@ router.post("/save-image", userController.saveImage);
 router.post("/cancel-image", userController.cancelUpload);
 router.post("/delete-image", userController.deleteImage);
 router.post("/image", upload, userController.uploadImage);
-router.post("/image-mobile", upload, userController.saveImageMobile);
 router.post("/sign-in", userController.login);
+router.get("/logout", userController.logout);
 router.post("/sign-up", userController.register);
 router.put("/edit-data", userController.edit);
 router.put("/edit-password", userController.editPassword);
 
 router.post("/add-product", cartController.addProdcut);
 router.post("/delete-product", cartController.deleteProduct);
-router.post("/update-product", cartController.updateProduct);
+router.post(
+  "/update-quantity-product",
+
+  cartController.updateQuantityProduct
+);
 router.post("/get-product", cartController.getProduct);
+router.post(
+  "/get-cart-not-logged",
+  cartController.getProductsCartNotLoggedUser
+);
 router.post("/get-fav-product", cartController.getFavProduct);
 router.post("/delete-favorite", cartController.deleteFavorite);
+router.post("/get-user-products", cartController.getUserProducts);
 
+router.post("/get-shoes", shoesController.getShoes);
 router.post("/get-promocode", promoCodeController.getCode);
 
 router.post("/fetch-product", productController.fetchProduct);
-router.post(
-  "/get-search-product-names",
-  productController.getSearchedNamesOfProducts
-);
+router.get("/fetch-all-products", productController.fetchAllProduct);
 router.post("/add-product-db", productController.addProduct);
+
+router.post("/order", orderController.makeOrder);
 router.post("/get-searched-products", productController.getSearchedProduct);
-router.post("/delete-product-db", productController.deleteProduct);
 
 module.exports = router;

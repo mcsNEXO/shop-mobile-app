@@ -31,6 +31,10 @@ const userSchema = new Schema({
     type: String,
     default: "avatar.png",
   },
+  admin: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 userSchema.pre("save", function (next) {
